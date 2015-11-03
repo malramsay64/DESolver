@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS= -Ofast -std=c++11
-LDFLAGS= -lm
+LDFLAGS= -lm -lcblas
 
 LIB=lib
 MODULES=$(wildcard $(LIB)/*.cpp)

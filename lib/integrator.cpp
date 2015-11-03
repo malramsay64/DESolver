@@ -1,6 +1,6 @@
 #include "integrator.h"
 
-double total_time = 0.0000001;
+double total_time = 0.001;
 double Q = 1;
 
 using namespace std;
@@ -12,14 +12,15 @@ double timestep(double dx, double q){
 void integrator(double *x, int size, double dx) {
     double time = 0;
     double dt = timestep(dx,Q);
-    double *b;
-    b = (double *) malloc(size * sizeof(double));
+    double *H, *n;
+    H = (double *) malloc(size * size * sizeof(double));
+    n = (double *) malloc(size * sizeof(double));
+    finite_difference_double(H,size);
     cout << "Timesteps: " << total_time/dt << " Size x: " << size << endl;
     while (time < total_time){
-        double_differential(x,b,dx,size,true);
-        for (int i=0; i<size; i++){
-            x[i] += dt*(b[i]+noise(Q));
-        }
+        noise(n, size, Q);
+        cblas_dgemv(CblasRowMajor,CblasNoTrans, size, size, dt, H, size, x, 1, 1, x, 1);
+        cblas_daxpy(size,dt,n,1,x,1);
         time += dt;
     }
 }

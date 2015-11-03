@@ -7,15 +7,18 @@
 using namespace std;
 
 int main (int argc, const char* argv[]){
-    double a[100], b[100], c[100];
+    double a[100];
     
     for (int i=0; i<100; i++){
         a[i] = 0;
-        b[i] = 0;
     }
+
     integrator(a, 100, 0.01);
-    for (int i=0; i<100; i++){
-        cout << a[i] << endl;
+    for (int i=0; i<10; i++) {
+        for (int j = 0; j < 10; j++) {
+            cout << a[i * 10 + j];
+        }
+        cout << endl;
     }
 }
 
