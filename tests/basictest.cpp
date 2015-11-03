@@ -1,18 +1,8 @@
 #include <gtest/gtest.h>
-#include <iostream>
 #include "../lib/noise.h"
 #include "../lib/functions.h"
+#include "../lib/differentiate.h"
 
-TEST(Modulus, PositiveNum){
-    ASSERT_EQ(1, 5%4);
-    ASSERT_EQ(2, 6%4);
-    ASSERT_EQ(4, 4%5);
-}
-
-TEST(Modulus, NegativeNum){
-    ASSERT_EQ(-1,-1%5);
-    ASSERT_EQ(-1, -6%5);
-}
 
 TEST(Stats, Mean){
     double x[] {-1.0, 1.0, -1.0, 1.0};
@@ -39,6 +29,15 @@ TEST(Stats, Stdev){
     ASSERT_DOUBLE_EQ(1, stdev(z,5));
 }
 
+TEST(Stats, Sum){
+    double x[] {1,2,3,4};
+    ASSERT_DOUBLE_EQ(10, sum(x,4));
+    double y[] {-1,-2,1,2};
+    ASSERT_DOUBLE_EQ(0, sum(y,4));
+    double z[] {-1,-2,-3,-4};
+    ASSERT_DOUBLE_EQ(-10, sum(z,4));
+}
+
 TEST(Noise, Mean){
     int size = 100;
     double Q = 1.0;
@@ -53,6 +52,20 @@ TEST(Noise, Stdev){
     double n[size];
     noise(n, size, Q);
     ASSERT_NEAR(Q, stdev(n,size), 5./size);
+}
+
+TEST(Differentiate, FiniteDifferenceDouble){
+    double per[] {-2,1,0,0,0,1,\
+                  1,-2,1,0,0,0,\
+                  0,1,-2,1,0,0,\
+                  0,0,1,-2,1,0,\
+                  0,0,0,1,-2,1,\
+                  1,0,0,0,1,-2 };
+    int size = 6;
+    double H[size*size];
+    finite_difference_double(H, size);
+    cblas_daxpy(size*size,-1,per,1,H,1);
+    ASSERT_DOUBLE_EQ(0,sum(H,size*size));
 }
 
 int main(int argc, char **argv){

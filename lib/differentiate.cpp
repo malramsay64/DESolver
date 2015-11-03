@@ -5,6 +5,13 @@
  */
 
 void finite_difference_double(double *H, int size){
+    // Ensure matrix initialised to 0
+    for (int i=0;i<size;i++){
+        for (int j=0;j<size;j++){
+            H[i*size+j] = 0;
+        }
+    }
+    // Change necessary values
     for (int i = 1;  i<size-1; i++){
         H[i*size+i] = -2;
         H[i*size+(i-1)%size] = 1;

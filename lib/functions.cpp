@@ -34,3 +34,11 @@ double variance(double *x, int size){
 double stdev(double *x, int size){
     return sqrt(variance(x,size));
 }
+
+double sum(double *x, int size){
+    double res = 0;
+    for (int i=0; i<size; i++){
+        res += x[i];
+    }
+    return res;
+}
