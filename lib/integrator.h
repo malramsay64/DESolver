@@ -5,6 +5,7 @@
 #ifndef integrator_h
 #define integrator_h
 
-void integrator(double *x, int size, double dx);
+double timestep(double dx, double q);
+void integrator(double *x, int size, double dx, double Q);
 
 #endif

@@ -1,15 +1,19 @@
 #include "integrator.h"
 
 double total_time = 0.001;
-double Q = 1;
 
 using namespace std;
 
 double timestep(double dx, double q){
-    return 0.001*(dx*dx)/(4*q);
+    if (q != 0) {
+        return fabs(0.01 * (dx * dx) / (4 * q));
+    }
+    else {
+        return 1e-3;
+    }
 }
 
-void integrator(double *x, int size, double dx) {
+void integrator(double *x, int size, double dx, double Q) {
     double time = 0;
     double dt = timestep(dx,Q);
     double *H, *n;

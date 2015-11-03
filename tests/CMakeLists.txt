@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.3)
 project(shear)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 add_executable(runBasicTests basictest.cpp)
+add_executable(runComplexTests complextest.cpp)
 
-target_link_libraries(runBasicTest gtest gtest_main)
+target_link_libraries(runBasicTests gtest gtest_main)
+target_link_libraries(runComplexTests gtest gtest_main)
