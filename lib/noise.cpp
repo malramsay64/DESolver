@@ -11,5 +11,6 @@ int noise(double *n, int size, double Q){
 }
 
 double noise(double Q){
-    return 0;//distribution(generator)*Q;
+    return distribution(generator)*Q;
 }
+

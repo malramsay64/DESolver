@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main (int argc, const char* argv[]){
+int main (int argc, char** argv){
     double a[100];
     
     for (int i=0; i<100; i++){
@@ -20,5 +20,6 @@ int main (int argc, const char* argv[]){
         }
         cout << endl;
     }
+    return 0;
 }
 
