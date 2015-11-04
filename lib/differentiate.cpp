@@ -4,7 +4,7 @@
  * Generates the matrices needed for differentiation
  */
 
-void finite_difference_double(double *H, int size){
+void finite_difference_double_matrix(double *H, int size){
     // Ensure matrix initialised to 0
     for (int i=0;i<size;i++){
         for (int j=0;j<size;j++){
@@ -25,6 +25,18 @@ void finite_difference_double(double *H, int size){
     H[size*size-1] = -2;
     H[size*size-2] = 1;
     H[(size-1)*size] = 1;
+}
+
+double finite_difference_double(double *H, int size, double dx, int index) {
+    if (index == 0) {
+        return (H[size - 1] + H[index + 1] - 2 * H[index]) / (dx * dx);
+    }
+    else if (index == size - 1){
+        return (H[index - 1] + H[0] - 2 * H[index]) / (dx * dx);
+    }
+    else {
+        return (H[index - 1] + H[index+1] - 2 * H[index]) / (dx * dx);
+    }
 }
 
 /* 

@@ -8,21 +8,19 @@
 using namespace std;
 
 // Global variables
-int size;
-double totalTime;
-double Q;
 
 
 int main (int argc, char** argv){
-    size = 1000;
+    int size;
+    double Q;
+    size = 100;
     Q = 1;
     double a[size];
     
     for (int i=0; i<size; i++){
         a[i] = 0;
     }
-
-    integrator(a, size, 0.01, 1, Q);
+    integrator(a, size, 0.01, timestep(0.01, Q), 0.01, Q, 0.1);
     return 0;
 }
 

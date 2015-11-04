@@ -54,7 +54,7 @@ TEST(Noise, Stdev){
     ASSERT_NEAR(Q, stdev(n,size), 5./size);
 }
 
-TEST(Differentiate, FiniteDifferenceDouble){
+TEST(Differentiate, FiniteDifferenceDoubleMatrix){
     double per[] {-2,1,0,0,0,1,\
                   1,-2,1,0,0,0,\
                   0,1,-2,1,0,0,\
@@ -63,9 +63,29 @@ TEST(Differentiate, FiniteDifferenceDouble){
                   1,0,0,0,1,-2 };
     int size = 6;
     double H[size*size];
-    finite_difference_double(H, size);
+    finite_difference_double_matrix(H, size);
     cblas_daxpy(size*size,-1,per,1,H,1);
     ASSERT_DOUBLE_EQ(0,sum(H,size*size));
+}
+
+TEST(Differentiate, FiniteDifferenceDoubleInd){
+    // Testing Zeroness
+    double H[6] {0,0,0,0,0,0};
+    ASSERT_DOUBLE_EQ(0, finite_difference_double(H, 6, 1, 3));
+    ASSERT_DOUBLE_EQ(0, finite_difference_double(H, 6, 1, 0));
+    ASSERT_DOUBLE_EQ(0, finite_difference_double(H, 6, 1, 5));
+    // Testing simple vector
+    double x[7] {-0.1, 0, 0.1, 0.1, 0.1, 0, -0.1};
+    ASSERT_DOUBLE_EQ(0, finite_difference_double(x, 7, 1, 3));
+    ASSERT_DOUBLE_EQ(0.1, finite_difference_double(x, 7, 1, 0));
+    ASSERT_DOUBLE_EQ(0.1, finite_difference_double(x, 7, 1, 6));
+    ASSERT_DOUBLE_EQ(-0.1, finite_difference_double(x, 7, 1, 4));
+    ASSERT_DOUBLE_EQ(0, finite_difference_double(x, 7, 1, 1));
+    // Testing dx
+    ASSERT_DOUBLE_EQ(10, finite_difference_double(x, 7, 0.1, 0));
+    ASSERT_DOUBLE_EQ(0.4, finite_difference_double(x, 7, 0.5, 0));
+    ASSERT_DOUBLE_EQ(-0.4, finite_difference_double(x, 7, 0.5, 4));
+    ASSERT_DOUBLE_EQ(-10, finite_difference_double(x, 7, 0.1, 4));
 }
 
 int main(int argc, char **argv){
