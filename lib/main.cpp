@@ -2,24 +2,27 @@
 #include <iostream>
 #include "noise.h"
 #include "integrator.h"
+#include "output.h"
 
 
 using namespace std;
 
+// Global variables
+int size;
+double totalTime;
+double Q;
+
+
 int main (int argc, char** argv){
-    double a[100];
+    size = 1000;
+    Q = 1;
+    double a[size];
     
-    for (int i=0; i<100; i++){
+    for (int i=0; i<size; i++){
         a[i] = 0;
     }
 
-    integrator(a, 100, 0.01, 1);
-    for (int i=0; i<10; i++) {
-        for (int j = 0; j < 10; j++) {
-            cout << a[i * 10 + j];
-        }
-        cout << endl;
-    }
+    integrator(a, size, 0.01, 1, Q);
     return 0;
 }
 

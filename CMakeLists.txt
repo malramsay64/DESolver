@@ -15,7 +15,9 @@ set(SOURCE_FILES
         lib/noise.cpp
         lib/noise.h
         lib/functions.cpp
-        lib/functions.h)
+        lib/functions.h
+        lib/output.cpp
+        lib/output.h)
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
 add_executable(runBasicTests tests/basictest.cpp ${SOURCE_FILES})
