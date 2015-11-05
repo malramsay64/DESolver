@@ -5,17 +5,16 @@
 #include "output.h"
 using namespace std;
 
-int print(double *x, int size, double time, double dx, bool reset){
+int print(double *x, int size, double time, double dx, const char* fname, bool reset){
     ofstream outfile;
     if (reset){
-        outfile.open("output.dat");
+        outfile.open(fname);
     }
     else {
-        outfile.open("output.dat", ios::app);
+        outfile.open(fname, ios::app);
     }
-    outfile << "Timestep    " << time << endl;
     for (int i=0; i<size; i++){
-        outfile << dx*i << " " << x[i] << endl;
+        outfile << dx*i << " " << x[i] << " " << time << endl;
     }
     outfile << endl;
     return 0;

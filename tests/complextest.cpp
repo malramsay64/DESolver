@@ -99,12 +99,13 @@ TEST(Integrator, Congruency){
     double y[size];
     for (int i=0;i<size;i++){
         x[i] = 0;
+        y[i] = 0;
     }
     double Q = 1;
-    integrator(x, size, 1. / size, timestep(1. / size, Q), timestep(1. / size, Q), Q);
-    integrator_cblas(y, size, 1. / size, timestep(1. / size, Q), timestep(1. / size, Q), Q);
+    integrator(x, size, 1. / size, timestep(1. / size, Q), total_time, Q);
+    integrator_cblas(y, size, 1. / size, timestep(1. / size, Q), total_time, Q);
     cblas_daxpy(size, -1, x, 1, y, 1);
-    ASSERT_NEAR(0, sum(y, size), 1e-7);
+    ASSERT_NEAR(0, sum(y, size), 1e-5);
 }
 int main(int argc, char **argv){
     testing::InitGoogleTest(&argc, argv);
