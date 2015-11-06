@@ -2,6 +2,7 @@
 #include <iostream>
 #include <getopt.h>
 #include "integrator.h"
+#include "stability.h"
 
 
 using namespace std;
@@ -12,24 +13,28 @@ void useage(){
    cout << \
            "Input variables\n"
            "    -s  size\n"
-           "        The number of x values\n"
+           "        The number of x values\n\n"
            "    -q  Q\n"
-           "        The stdev of the random number generator\n"
+           "        The stdev of the random number generator\n\n"
            "    -t  total time\n"
-           "        The total runtime of the simulation\n"
+           "        The total runtime of the simulation\n\n"
            "    -a  A\n"
-           "        The magnitude of the shear force\n"
+           "        The magnitude of the shear force\n\n"
            "    -x  dx\n"
-           "        The size of the steps in x\n"
+           "        The size of the steps in x\n\n"
            "    -d  delta\n"
-           "        The temperature of the system\n"
+           "        The temperature of the system\n\n"
            "    -f   dt\n"
-           "        The size of each timestep\n" << endl;
+           "        The size of each timestep\n\n"
+           "    -m  delay\n"
+           "        Noise is added every m timesteps"
+   << endl;
 }
 
 int main (int argc, char** argv){
     // Arguments
     int size = 100;
+    int delay = 1;
     double Q = 1;
     double total_time = 0.001;
     double A = 0;
@@ -60,6 +65,9 @@ int main (int argc, char** argv){
             case 'f':
                 dt = atof(optarg);
                 break;
+            case 'm':
+                delay = atoi(optarg);
+                break;
             case 'h':
                 useage();
                 return 0;
@@ -67,8 +75,7 @@ int main (int argc, char** argv){
                 if (optopt == 's' || optopt == 'Q') {
                     cerr << "Option -" << toascii(optopt) << " requires an argument." << endl;
                 }
-                else {
-                    cerr << "Unknown option -" << toascii(optopt) << endl;
+                else { cerr << "Unknown option -" << toascii(optopt) << endl;
                 }
                 return 1;
             default:
@@ -86,8 +93,8 @@ int main (int argc, char** argv){
         a[i] = 0;
     }
 
-    integrator(a, size, dx, dt, total_time, Q, A, delta);
-
+    integrator(a, size, dx, dt, total_time, Q, A, delta, delay);
+    cout << size << " " << dx << " " << dt << " " << total_time << " " << Q << " " << A << " " << delta << " " << delay << " " << stability(a, size) << endl;
     free(a);
     return 0;
 }

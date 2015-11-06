@@ -17,7 +17,7 @@ set(SOURCE_FILES
         lib/functions.cpp
         lib/functions.h
         lib/output.cpp
-        lib/output.h)
+        lib/output.h lib/stability.cpp lib/stability.h)
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
 add_executable(runBasicTests tests/basictest.cpp ${SOURCE_FILES})

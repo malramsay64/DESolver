@@ -11,12 +11,12 @@ double timestep(double dx, double q){
     }
 }
 
-void integrator(double *x, int size, double dx, double dt, double total_time, double Q, double A, double delta){
+void integrator(double *x, int size, double dx, double dt, double total_time, double Q, double A, double delta, int m){
     double time = 0;
     int step = 0;
     int print_every = int((total_time/dt)/20)+1;
     double *dH = (double *)malloc(size*sizeof(double));
-    cout << "Timesteps: " << total_time/dt << " Size x: " << size << endl;
+    //cout << "Timesteps: " << total_time/dt << " Size x: " << size << endl;
     stringstream fname;
     string tmp;
     fname << total_time << "-" << dt << "-" << size << "-" << Q << "-" << A << "-" << delta << ".dat";
@@ -24,8 +24,17 @@ void integrator(double *x, int size, double dx, double dt, double total_time, do
     print(x, size, time, dx, tmp.c_str(), true);
     while (time < total_time) {
         if (A == 0){
-            for (int i=0; i<size; i++){
-                dH[i] = dt*(finite_difference_double(x, size, dx, i)+noise(Q));
+            if (step % m == 0) {
+                // Noise added
+                for (int i = 0; i < size; i++) {
+                    dH[i] = dt * (finite_difference_double(x, size, dx, i) + noise(Q));
+                }
+            }
+            else {
+                // No noise added to simulation
+                for (int i = 0; i < size; i++) {
+                    dH[i] = dt * (finite_difference_double(x, size, dx, i));
+                }
             }
             for (int i=0; i<size; i++){
                 x[i] += dH[i];
@@ -64,7 +73,7 @@ void integrator_cblas(double *x, int size, double dx, double dt, double total_ti
     H = (double *) malloc(size * size * sizeof(double));
     n = (double *) malloc(size * sizeof(double));
     finite_difference_double_matrix(H, size);
-    cout << "Timesteps: " << total_time/dt << " Size x: " << size << endl;
+    //cout << "Timesteps: " << total_time/dt << " Size x: " << size << endl;
     char fname[30];
     sprintf(fname, "%f-%i-%f-%f.dat", total_time, size, Q, A);
     print(x, size, time, dx, fname, true);
