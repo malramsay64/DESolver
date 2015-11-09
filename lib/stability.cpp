@@ -4,11 +4,11 @@
 
 #include "stability.h"
 
-int stability(double *x, int size){
+int stability(double *x, int size, double precision){
     double m = mean(x, size);
     double s = stdev(x, size);
     if (s < 1){
-        if (fabs(m) < 1e-5){
+        if (fabs(m) < precision){
             return 0;
         }
         else if ( m < 0) {

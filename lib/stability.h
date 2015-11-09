@@ -7,6 +7,6 @@
 
 #include "functions.h"
 
-int stability(double *x, int size);
+int stability(double *x, int size, double precision=1e-5);
 
 #endif //SHEAR_STABILITY_H

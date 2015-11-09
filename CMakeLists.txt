@@ -20,5 +20,6 @@ set(SOURCE_FILES
         lib/output.h lib/stability.cpp lib/stability.h)
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
+add_executable(search lib/search.cpp ${SOURCE_FILES})
 add_executable(runBasicTests tests/basictest.cpp ${SOURCE_FILES})
 add_executable(runComplexTests tests/complextest.cpp ${SOURCE_FILES})
