@@ -17,9 +17,14 @@ set(SOURCE_FILES
         lib/functions.cpp
         lib/functions.h
         lib/output.cpp
-        lib/output.h lib/stability.cpp lib/stability.h)
+        lib/output.h
+        lib/stability.cpp
+        lib/stability.h
+        lib/input.cpp
+        lib/input.h
+        lib/search.cpp
+        lib/search.h)
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
-add_executable(search lib/search.cpp ${SOURCE_FILES})
 add_executable(runBasicTests tests/basictest.cpp ${SOURCE_FILES})
 add_executable(runComplexTests tests/complextest.cpp ${SOURCE_FILES})

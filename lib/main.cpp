@@ -1,100 +1,30 @@
-#include <string>
-#include <iostream>
-#include <getopt.h>
+#include "input.h"
 #include "integrator.h"
 #include "stability.h"
+#include "search.h"
 
 
 using namespace std;
 
 // Global variables
 
-void useage(){
-   cout << \
-           "Input variables\n"
-           "    -s  size\n"
-           "        The number of x values\n\n"
-           "    -q  Q\n"
-           "        The stdev of the random number generator\n\n"
-           "    -t  total time\n"
-           "        The total runtime of the simulation\n\n"
-           "    -a  A\n"
-           "        The magnitude of the shear force\n\n"
-           "    -x  dx\n"
-           "        The size of the steps in x\n\n"
-           "    -d  delta\n"
-           "        The temperature of the system\n\n"
-           "    -f   dt\n"
-           "        The size of each timestep\n\n"
-           "    -m  delay\n"
-           "        Noise is added every m timesteps"
-   << endl;
-}
+
 
 int main (int argc, char** argv){
-    // Arguments
-    int size = 100;
-    int delay = 1;
-    double Q = 1;
-    double total_time = 0.001;
-    double A = 0;
-    double dx = 0;
-    double delta = 0;
-    double dt = 0;
-    int opt;
-    while ((opt = getopt(argc, argv, "s:q:t:a:x:d:f:h")) != -1){
-        switch (opt) {
-            case 's':
-                size = atoi(optarg);
-                break;
-            case 'q':
-                Q = atof(optarg);
-                break;
-            case 't':
-                total_time = atof(optarg);
-                break;
-            case 'a':
-                A = atof(optarg);
-                break;
-            case 'x':
-                dx = atof(optarg);
-                break;
-            case 'd':
-                delta = atof(optarg);
-                break;
-            case 'f':
-                dt = atof(optarg);
-                break;
-            case 'm':
-                delay = atoi(optarg);
-                break;
-            case 'h':
-                useage();
-                return 0;
-            case '?':
-                if (optopt == 's' || optopt == 'Q') {
-                    cerr << "Option -" << toascii(optopt) << " requires an argument." << endl;
-                }
-                else { cerr << "Unknown option -" << toascii(optopt) << endl;
-                }
-                return 1;
-            default:
-                abort();
-        }
+
+    variables v;
+    set_vars(argc, argv, &v);
+    double *a = (double *) malloc(v.size*sizeof(double));
+
+    if (v.run_search) {
+        v.delta = search_delta(a, v);
     }
-    if (dx == 0){
-        dx = 1./size;
-    }
-    if (dt == 0){
-        dt = timestep(dx, size);
-    }
-    double *a = (double *) malloc(size*sizeof(double));
-    for (int i=0; i<size; i++){
+    for (int i=0; i<v.size; i++){
         a[i] = 0;
     }
 
-    integrator(a, size, dx, dt, total_time, Q, A, delta, delay);
-    cout << size << " " << dx << " " << dt << " " << total_time << " " << Q << " " << A << " " << delta << " " << delay << " " << stability(a, size) << endl;
+    integrator(a, v);
+    cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " << v.delta << " " << v.delay << " " << stability(a, v.size) << endl;
     free(a);
     return 0;
 }
