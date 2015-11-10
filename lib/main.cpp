@@ -35,7 +35,7 @@ int main (int argc, char** argv){
                 v.A = v.Amax;
             }
         }
-        cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " << v.delta << " " << v.delay << " " << stability(a, v.size) << endl;
+        cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " << v.delta << " " << v.delay << " " << stability(a, v.size) << " " << mean(a, v.size) << endl;
     }
 
     free(a);

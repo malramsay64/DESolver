@@ -12,11 +12,11 @@
 
 struct variables{
     int size = 100;
-    double Q =1;
+    double Q = 1;
     double total_time = 0.01;
-    double dt = 0;
+    double dt = 1e-6;
     double A = 0;
-    double dx = 0;
+    double dx = 0.01;
     double delta = 0;
     int delay = 1;
     int run_search = 0;

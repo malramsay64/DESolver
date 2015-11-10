@@ -33,6 +33,8 @@ double search_delta(double * x, variables *v) {
             // Moves out of stability
         else if (stabLast != 2) {
             (*v).delta = ((*v).delta + deltaLast) / 2;
+            deltaDelta /= 2;
+            stabLast = stab;
         }
             // Instability
         else {

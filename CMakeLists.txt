@@ -3,7 +3,8 @@ project(shear)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-find_package(GTest REQUIRED)
+add_subdirectory(tests/lib/gtest-1.7.0)
+enable_testing(true)
 
 link_libraries(cblas gtest pthread)
 
@@ -28,3 +29,4 @@ set(SOURCE_FILES
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
 add_executable(runBasicTests tests/basictest.cpp ${SOURCE_FILES})
 add_executable(runComplexTests tests/complextest.cpp ${SOURCE_FILES})
+

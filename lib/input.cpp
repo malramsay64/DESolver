@@ -34,6 +34,8 @@ void useage(){
 int set_vars(int argc, char** argv, variables *v){
     int opt;
     int option_index;
+    (*v).dt = 0;
+    (*v).dx = 0;
     static struct option long_options[] = {
             {"search", no_argument, &(*v).run_search, 1},
             {"size", required_argument, 0, 's'},
@@ -100,4 +102,5 @@ int set_vars(int argc, char** argv, variables *v){
     if ((*v).dt == 0){
         (*v).dt = timestep((*v).dx, (*v).size);
     }
+    return 0;
 }

@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include "../lib/integrator.h"
 #include "../lib/functions.h"
+#include "../lib/search.h"
 
 TEST(Integrator, Timestep){
     ASSERT_DOUBLE_EQ(1e-3,timestep(1./100,0));
@@ -14,9 +15,7 @@ TEST(Integrator, Timestep){
 TEST(IntegratorCBLAS, NoNoiseSteadyState){
     variables v;
     double x[v.size];
-    for (int i=0;i<v.size;i++){
-        x[i] = 0;
-    }
+    initialise(x, v.size);
     v.Q = 0; // No noise
     integrator_cblas(x, v);
     ASSERT_DOUBLE_EQ(0, sum(x,v.size));
@@ -25,9 +24,7 @@ TEST(IntegratorCBLAS, NoNoiseSteadyState){
 TEST(IntegratorCBLAS, SteadyState){
     variables v;
     double x[v.size];
-    for (int i=0;i<v.size;i++){
-        x[i] = 0;
-    }
+    initialise(x, v.size);
     integrator_cblas(x, v);
     ASSERT_NEAR(0, mean(x,v.size),1./v.size);
     ASSERT_NEAR(0, stdev(x,v.size),2./v.size);
@@ -37,9 +34,8 @@ TEST(IntegratorCBLAS, Dampening){
     variables v;
     double x[v.size];
     double y[v.size];
-    for (int i=0;i<v.size;i++){
-        x[i] = 0;
-    }
+    initialise(x, v.size);
+    initialise(y, v.size);
     integrator_cblas(x, v);
     integrator_cblas(y, v);
     v.Q = 0;
@@ -49,9 +45,7 @@ TEST(IntegratorCBLAS, Dampening){
 TEST(Integrator, NoNoiseSteadyState){
     variables v;
     double x[v.size];
-    for (int i=0;i<v.size;i++){
-        x[i] = 0;
-    }
+    initialise(x, v.size);
     v.Q = 0; // No noise
     integrator(x, v);
     ASSERT_DOUBLE_EQ(0, sum(x,v.size));
@@ -60,9 +54,7 @@ TEST(Integrator, NoNoiseSteadyState){
 TEST(Integrator, SteadyState){
     variables v;
     double x[v.size];
-    for (int i=0;i<v.size;i++){
-        x[i] = 0;
-    }
+    initialise(x, v.size);
     integrator(x, v);
     ASSERT_NEAR(0, mean(x,v.size),1./v.size);
     ASSERT_NEAR(0, stdev(x,v.size),2./v.size);
@@ -72,30 +64,98 @@ TEST(Integrator, Dampening){
     variables v;
     double x[v.size];
     double y[v.size];
-    for (int i=0;i<v.size;i++){
-        x[i] = 0;
-    }
+    initialise(x, v.size);
     integrator(x, v);
     integrator(y, v);
     v.Q = 0;
     integrator(x, v);
-    ASSERT_TRUE(stdev(x,v.size)<stdev(y,v.size));
+    ASSERT_TRUE(stdev(x,v.size) < stdev(y,v.size));
 }
 
 TEST(Integrator, Congruency){
     variables v;
     double x[v.size];
     double y[v.size];
-    for (int i=0;i<v.size;i++){
-        x[i] = 0;
-        y[i] = 0;
-    }
+    initialise(x, v.size);
+    initialise(y, v.size);
     integrator(x, v);
     integrator_cblas(y, v);
     cblas_daxpy(v.size, -1, x, 1, y, 1);
-    ASSERT_NEAR(0, sum(y, v.size), 1e-5);
+    ASSERT_NEAR(0, sum(y, v.size), 1e-2);
 }
-int main(int argc, char **argv){
+
+TEST(Search, Known){
+    variables v;
+    v.dt = 1e-6;
+    v.total_time = 0.1;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    ASSERT_DOUBLE_EQ(0, search_delta(x, &v));
+}
+
+TEST(Search, CloseSinglePos){
+    variables v;
+    v.delta = 0.1;
+    v.size = 100;
+    v.dt = 1e-7;
+    v.total_time = 0.1;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    ASSERT_NEAR(0, search_delta(x,  &v), 1e-3);
+}
+
+TEST(Search, CloseSingleNeg){
+    variables v;
+    v.delta = -0.1;
+    v.size = 100;
+    v.dt = 1e-7;
+    v.total_time = 0.1;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    ASSERT_NEAR(0, search_delta(x,  &v), 1e-3);
+}
+
+TEST(Search, ClosePos){
+    variables v;
+    v.delta = 0.175;
+    v.size = 100;
+    v.dt = 1e-7;
+    v.total_time = 0.1;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    ASSERT_NEAR(0, search_delta(x,  &v), 1e-3);
+}
+
+TEST(Search, CloseNeg){
+    variables v;
+    v.delta = -0.175;
+    v.size = 100;
+    v.dt = 1e-7;
+    v.total_time = 0.1;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    ASSERT_NEAR(0, search_delta(x,  &v), 1e-3);
+}
+
+TEST(Search, Unstable){
+    variables v;
+    v.total_time = 0.001;
+    v.dt = 1e-4;
+    v.size = 1000;
+    v.A = 0.5;
+    v.delta = 0.132;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    ASSERT_TRUE(isnan(search_delta(x,  &v)));
+}
+
+int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
