@@ -16,15 +16,28 @@ int main (int argc, char** argv){
     set_vars(argc, argv, &v);
     double *a = (double *) malloc(v.size*sizeof(double));
 
-    if (v.run_search) {
-        v.delta = search_delta(a, v);
+    int steps = 1;
+    if (v.Amax > v.deltaA) {
+        steps = int((v.Amax - v.A) / v.deltaA) + 1;
     }
-    for (int i=0; i<v.size; i++){
-        a[i] = 0;
+    for (int i = 0; i < steps; i++){
+        initialise(a, v.size);
+        if (v.run_search) {
+            v.delta = search_delta(a, &v);
+        }
+        else {
+            integrator(a, v);
+        }
+
+        if (v.Amax > v.deltaA) {
+            v.A += v.deltaA;
+            if (v.A > v.Amax) {
+                v.A = v.Amax;
+            }
+        }
+        cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " << v.delta << " " << v.delay << " " << stability(a, v.size) << endl;
     }
 
-    integrator(a, v);
-    cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " << v.delta << " " << v.delay << " " << stability(a, v.size) << endl;
     free(a);
     return 0;
 }

@@ -5,37 +5,40 @@
 
 using namespace std;
 
-double search_delta(double * x, variables v) {
-    double deltaDelta = v.deltaA;
+double search_delta(double * x, variables *v) {
+    double deltaDelta = 0.1;
     double deltaLast = 0;
-    double delta = v.delta;
     int stabLast = -10;
     int stab = -10;
+    if ((*v).deltaA != 0){
+        deltaDelta = (*v).deltaA;
+    }
     while (stab != 0) {
-        // Initialize vector
-        for (int i = 0; i < v.size; i++) {
-            x[i] = 0;
-        }
+        initialise(x, (*v).size);
         // Integration
-        integrator(x, v);
+        integrator(x, *v);
 
         // Comparison
-        stab = stability(x, v.size);
+        stab = stability(x, (*v).size);
         // Determination of next step
         if (abs(stab) <= 1) {
-            delta -= stab * deltaDelta;
-            if (stabLast != stab) {
+            (*v).delta -= stab * deltaDelta;
+            if (stabLast != -10 && stabLast != stab) {
                 deltaDelta /= 2;
             }
             stabLast = stab;
-            deltaLast = delta;
+            deltaLast = (*v).delta;
 
+        }
+            // Moves out of stability
+        else if (stabLast != 2) {
+            (*v).delta = ((*v).delta + deltaLast) / 2;
         }
             // Instability
         else {
-            delta = (delta + deltaLast) / 2;
+            return NAN;
         }
     }
-    return delta;
+    return (*v).delta;
 }
 

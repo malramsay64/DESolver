@@ -42,3 +42,9 @@ double sum(double *x, int size){
     }
     return res;
 }
+
+void initialise(double * a, int size){
+    for (int i=0; i<size; i++){
+        a[i] = 0;
+    }
+}
