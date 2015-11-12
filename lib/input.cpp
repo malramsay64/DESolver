@@ -27,17 +27,25 @@ void useage(){
             "    -m  --delay\n"
             "        Noise is added every m timesteps\n\n"
             "    -A  --Amax\n"
-            "        Maximum A value"
+            "        Maximum A value\n\n"
+            "    --search\n"
+            "        Searches for a point on the steady state curve\n"
+            "        by manipulating delta\n\n"
+            "    --range\n"
+            "        Provides a range of delta values at which there\n"
+            "        is a steasy state\n\n"
     << endl;
 }
 
 int set_vars(int argc, char** argv, variables *v){
     int opt;
     int option_index;
-    (*v).dt = 0;
-    (*v).dx = 0;
+    v->dt = 0;
+    v->dx = 0;
     static struct option long_options[] = {
-            {"search", no_argument, &(*v).run_search, 1},
+            {"search", no_argument, &v->run_search, 1},
+            {"range", no_argument, &v->search_range, 1},
+            {"print", no_argument, &v->print, 1},
             {"size", required_argument, 0, 's'},
             {"total_time", required_argument, 0, 't'},
             {"dx"  , required_argument, 0, 'x'},
@@ -46,41 +54,48 @@ int set_vars(int argc, char** argv, variables *v){
             {"delay", required_argument, 0, 'm'},
             {"help", no_argument,      0, 'h'},
             {"deltaA", required_argument, 0, 'D'},
-            {"Amax", required_argument, 0, 'A'}
+            {"Amax", required_argument, 0, 'A'},
+            {"deltaDelta", required_argument, 0, '4'}
     };
-    while ((opt = getopt_long(argc, argv, "s:q:t:a:x:d:f:hm:",long_options, &option_index)) != -1){
+    while ((opt = getopt_long(argc, argv, "s:q:t:a:x:d:f:hpm:",long_options, &option_index)) != -1){
         switch (opt) {
             case 0:
                 break;
             case 's':
-                (*v).size = atoi(optarg);
+                v->size = atoi(optarg);
                 break;
             case 'q':
-                (*v).Q = atof(optarg);
+                v->Q = atof(optarg);
                 break;
             case 't':
-                (*v).total_time = atof(optarg);
+                v->total_time = atof(optarg);
                 break;
             case 'a':
-                (*v).A = atof(optarg);
+                v->A = atof(optarg);
                 break;
             case 'A':
-                (*v).Amax = atof(optarg);
+                v->Amax = atof(optarg);
+                break;
+            case 'p':
+                v->print = 1;
                 break;
             case 'D':
-                (*v).deltaA = atof(optarg);
+                v->deltaA = atof(optarg);
                 break;
             case 'x':
-                (*v).dx = atof(optarg);
+                v->dx = atof(optarg);
                 break;
             case 'd':
-                (*v).delta = atof(optarg);
+                v->delta = atof(optarg);
                 break;
             case 'f':
-                (*v).dt = atof(optarg);
+                v->dt = atof(optarg);
                 break;
             case 'm':
-                (*v).delay = atoi(optarg);
+                v->delay = atoi(optarg);
+                break;
+            case '4':
+                v->deltaDelta = atof(optarg);
                 break;
             case 'h':
                 useage();
@@ -96,11 +111,11 @@ int set_vars(int argc, char** argv, variables *v){
                 abort();
         }
     }
-    if ((*v).dx == 0){
-        (*v).dx = 1./((*v).size);
+    if (v->dx == 0){
+        v->dx = 1./(v->size);
     }
-    if ((*v).dt == 0){
-        (*v).dt = timestep((*v).dx, (*v).size);
+    if (v->dt == 0){
+        v->dt = timestep(v->dx, v->size);
     }
     return 0;
 }

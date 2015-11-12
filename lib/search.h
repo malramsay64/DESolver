@@ -10,7 +10,9 @@
 #include "input.h"
 
 
-double search_delta(double * x, variables *v);
+double search_delta(double * x, variables v);
+double search_upper(double * x, variables v);
+double search_lower(double * x, variables v);
 
 
 #endif //SHEAR_SEARCH_H

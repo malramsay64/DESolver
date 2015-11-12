@@ -12,6 +12,8 @@ using namespace std;
 
 int main (int argc, char** argv){
 
+    double max = 0;
+    double min = 0;
     variables v;
     set_vars(argc, argv, &v);
     double *a = (double *) malloc(v.size*sizeof(double));
@@ -22,8 +24,13 @@ int main (int argc, char** argv){
     }
     for (int i = 0; i < steps; i++){
         initialise(a, v.size);
-        if (v.run_search) {
-            v.delta = search_delta(a, &v);
+        if (v.search_range){
+            max = search_upper(a, v);
+            min = search_lower(a, v);
+            v.delta = (max+min)/2;
+        }
+        else if (v.run_search) {
+            v.delta = search_delta(a, v);
         }
         else {
             integrator(a, v);
@@ -35,7 +42,9 @@ int main (int argc, char** argv){
                 v.A = v.Amax;
             }
         }
-        cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " << v.delta << " " << v.delay << " " << stability(a, v.size) << " " << mean(a, v.size) << endl;
+        cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " \
+             << min << " " << v.delta << " " << max << " " << v.delay << " " << stability(a, v.size) << " " << \
+             mean(a, v.size) << endl;
     }
 
     free(a);

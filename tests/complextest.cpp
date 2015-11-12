@@ -91,7 +91,7 @@ TEST(Search, Known){
     v.delay = 5;
     double x[v.size];
     initialise(x, v.size);
-    ASSERT_DOUBLE_EQ(0, search_delta(x, &v));
+    ASSERT_DOUBLE_EQ(0, search_delta(x, v));
 }
 
 TEST(Search, CloseSinglePos){
@@ -103,7 +103,45 @@ TEST(Search, CloseSinglePos){
     v.delay = 5;
     double x[v.size];
     initialise(x, v.size);
-    ASSERT_NEAR(0, search_delta(x,  &v), 1e-3);
+    ASSERT_NEAR(0, search_delta(x,  v), 1e-3);
+}
+
+TEST(Search, Upper){
+    variables v;
+    v.delta = 0.1;
+    v.size = 100;
+    v.dt = 1e-6;
+    v.total_time = 0.01;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    ASSERT_NEAR(0.003, search_upper(x,  v), 1e-3);
+}
+
+TEST(Search, Lower){
+    variables v;
+    v.delta = 0.1;
+    v.size = 100;
+    v.dt = 1e-6;
+    v.total_time = 0.01;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    ASSERT_NEAR(-0.003, search_lower(x,  v), 1e-3);
+}
+
+TEST(Search, Range){
+    variables v;
+    v.delta = 0.1;
+    v.size = 100;
+    v.dt = 1e-6;
+    v.total_time = 0.01;
+    v.delay = 5;
+    double x[v.size];
+    initialise(x, v.size);
+    double min = search_lower(x,v);
+    double max = search_upper(x,v);
+    ASSERT_NEAR(0.006,max-min, 4e-3);
 }
 
 TEST(Search, CloseSingleNeg){
@@ -115,7 +153,7 @@ TEST(Search, CloseSingleNeg){
     v.delay = 5;
     double x[v.size];
     initialise(x, v.size);
-    ASSERT_NEAR(0, search_delta(x,  &v), 1e-3);
+    ASSERT_NEAR(0, search_delta(x,  v), 1e-3);
 }
 
 TEST(Search, ClosePos){
@@ -127,7 +165,7 @@ TEST(Search, ClosePos){
     v.delay = 5;
     double x[v.size];
     initialise(x, v.size);
-    ASSERT_NEAR(0, search_delta(x,  &v), 1e-3);
+    ASSERT_NEAR(0, search_delta(x,  v), 1e-3);
 }
 
 TEST(Search, CloseNeg){
@@ -139,7 +177,7 @@ TEST(Search, CloseNeg){
     v.delay = 5;
     double x[v.size];
     initialise(x, v.size);
-    ASSERT_NEAR(0, search_delta(x,  &v), 1e-3);
+    ASSERT_NEAR(0, search_delta(x,  v), 1e-3);
 }
 
 TEST(Search, Unstable){
@@ -152,7 +190,7 @@ TEST(Search, Unstable){
     v.delay = 5;
     double x[v.size];
     initialise(x, v.size);
-    ASSERT_TRUE(isnan(search_delta(x,  &v)));
+    ASSERT_TRUE(isnan(search_delta(x,  v)));
 }
 
 int main(int argc, char **argv) {

@@ -20,8 +20,11 @@ struct variables{
     double delta = 0;
     int delay = 1;
     int run_search = 0;
+    int search_range = 0;
+    double deltaDelta = 0.1;
     double Amax = 0;
     double deltaA = 0;
+    int print = 0;
 };
 
 void useage();
