@@ -5,6 +5,7 @@
 #include "../lib/integrator.h"
 #include "../lib/functions.h"
 #include "../lib/search.h"
+#include "../lib/stochastic_search.h"
 
 TEST(Integrator, Timestep){
     ASSERT_DOUBLE_EQ(1e-3,timestep(1./100,0));
@@ -191,6 +192,21 @@ TEST(Search, Unstable){
     double x[v.size];
     initialise(x, v.size);
     ASSERT_TRUE(isnan(search_delta(x,  v)));
+}
+
+TEST(Stochastic, Comparison){
+    variables v;
+    v.total_time = 0.001;
+    v.dt = 1e-6;
+    v.size = 100;
+    v.A = 0;
+    v.Q = 0;
+    v.delta = 0.1;
+    double x[v.size];
+    initialise(x, v.size);
+    double standard = search_lower(x, v);
+    double stochastic = stochastic_lower(x, v);
+    ASSERT_NEAR(standard, stochastic, 1e-3);
 }
 
 int main(int argc, char **argv) {

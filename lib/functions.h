@@ -12,5 +12,6 @@ double variance(double *x, int size);
 double stdev(double *x, int size);
 double sum(double *x, int size);
 void initialise( double *x, int size);
+int mode(int *x, int size);
 
 #endif //SHEAR_FUNCTIONS_H

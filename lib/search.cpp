@@ -45,19 +45,23 @@ double search_delta(double * x, variables v) {
 }
 
 double search_upper(double *x, variables v){
+    int trials = 3;
+    int stabs[trials];
     double max = INFINITY;
     double min = -INFINITY;
-    double dDelta = 0.1;
+    double dDelta = 0.05;
     if (v.deltaDelta != 0){
         dDelta = fabs(v.deltaDelta);
     }
     int stab = -10;
-    while (max - min > 1e-4){
-        initialise(x, v.size);
-        integrator(x, v);
+    while (fabs(max - min) > 1e-4){
+        for (int i=0; i<trials;i++){
+            initialise(x, v.size);
+            integrator(x, v);
 
-        stab = stability(x, v.size);
-
+            stabs[i] = stability(x, v.size);
+        }
+        stab = mode(stabs, trials);
         if (stab == 1){
             max = v.delta;
             if (min > -INFINITY){
@@ -83,19 +87,23 @@ double search_upper(double *x, variables v){
 }
 
 double search_lower(double *x, variables v){
+    int trials = 3;
+    int stabs[trials];
     double max = INFINITY;
     double min = -INFINITY;
-    double dDelta = 0.1;
+    double dDelta = 0.05;
     if (v.deltaDelta != 0){
         dDelta = fabs(v.deltaDelta);
     }
     int stab = -10;
-    while (max - min > 1e-4){
-        initialise(x, v.size);
-        integrator(x, v);
+    while (fabs(max - min) > 1e-4){
+        for (int i=0; i<trials;i++) {
+            initialise(x, v.size);
+            integrator(x, v);
 
-        stab = stability(x, v.size);
-
+            stabs[i] = stability(x, v.size);
+        }
+        stab = mode(stabs, trials);
         if (stab == -1){
             min = v.delta;
             if (max < INFINITY){

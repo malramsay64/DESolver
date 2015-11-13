@@ -2,7 +2,7 @@
 #include "integrator.h"
 #include "stability.h"
 #include "search.h"
-
+#include "stochastic_search.h"
 
 using namespace std;
 
@@ -25,8 +25,8 @@ int main (int argc, char** argv){
     for (int i = 0; i < steps; i++){
         initialise(a, v.size);
         if (v.search_range){
-            max = search_upper(a, v);
-            min = search_lower(a, v);
+            max = stochastic_upper(a, v);
+            min = stochastic_lower(a, v);
             v.delta = (max+min)/2;
         }
         else if (v.run_search) {

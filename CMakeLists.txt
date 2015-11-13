@@ -24,7 +24,7 @@ set(SOURCE_FILES
         lib/input.cpp
         lib/input.h
         lib/search.cpp
-        lib/search.h)
+        lib/search.h lib/stochastic_search.cpp lib/stochastic_search.h)
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
 add_executable(runBasicTests tests/basictest.cpp ${SOURCE_FILES})
