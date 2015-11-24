@@ -19,3 +19,4 @@ int print(double *x, int size, double time, double dx, const char* fname, bool r
     outfile << endl;
     return 0;
 }
+

@@ -30,7 +30,7 @@ void integrator(double *x, variables v){
                 dH[i] += v.A * dH[i];
             }
             if (step % v.delay == 0) {
-                dH[i] += noise(v.Q/sqrt(v.dt/(v.dx*v.dx)));
+                dH[i] += noise(v.Q*(v.dt/(v.dx*v.dx)));
             }
             dH[i] *= v.dt;
         }

@@ -25,16 +25,27 @@ int main (int argc, char** argv){
     for (int i = 0; i < steps; i++){
         initialise(a, v.size);
         if (v.search_range){
+            int print = v.print;
+            v.print = 0;
             max = stochastic_upper(a, v);
             min = stochastic_lower(a, v);
             v.delta = (max+min)/2;
+            v.print = print;
+            integrator(a,v);
         }
         else if (v.run_search) {
+            int print = v.print;
+            v.print = 0;
             v.delta = search_delta(a, v);
+            v.print = print;
+            integrator(a,v);
         }
         else {
             integrator(a, v);
         }
+        cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " \
+             << min << " " << v.delta << " " << max << " " << v.delay << " " << stability(a, v.size) << " " << \
+             mean(a, v.size) << endl;
 
         if (v.Amax > v.deltaA) {
             v.A += v.deltaA;
@@ -42,9 +53,6 @@ int main (int argc, char** argv){
                 v.A = v.Amax;
             }
         }
-        cout << v.size << " " << v.dx << " " << v.dt << " " << v.total_time << " " << v.Q << " " << v.A << " " \
-             << min << " " << v.delta << " " << max << " " << v.delay << " " << stability(a, v.size) << " " << \
-             mean(a, v.size) << endl;
     }
 
     free(a);
