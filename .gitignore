@@ -1,5 +1,18 @@
-# Ignore binary files
-bin/*
+# Ignore executables
+shear
+runBasicTests
+runComplexTests
 
-# Ignore executable
-program
+# Ignore CMake Files
+CMakeFiles
+CMake*
+!CMakeLists.txt
+*.cmake
+Makefile
+
+#Ignore IDE Files
+.idea
+
+# GTest Files
+libgtest.a
+libgtest_main.a
