@@ -1,4 +1,3 @@
-#include <cblas.h>
 
 #ifndef differentiate_h
 #define differentiate_h

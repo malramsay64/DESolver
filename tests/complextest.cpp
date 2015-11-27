@@ -13,36 +13,6 @@ TEST(Integrator, Timestep){
     ASSERT_DOUBLE_EQ(2.5e-7, timestep(1./100,-1));
 }
 
-TEST(IntegratorCBLAS, NoNoiseSteadyState){
-    variables v;
-    double x[v.size];
-    initialise(x, v.size);
-    v.Q = 0; // No noise
-    integrator_cblas(x, v);
-    ASSERT_DOUBLE_EQ(0, sum(x,v.size));
-}
-
-TEST(IntegratorCBLAS, SteadyState){
-    variables v;
-    double x[v.size];
-    initialise(x, v.size);
-    integrator_cblas(x, v);
-    ASSERT_NEAR(0, mean(x,v.size),1./v.size);
-    ASSERT_NEAR(0, stdev(x,v.size),2./v.size);
-}
-
-TEST(IntegratorCBLAS, Dampening){
-    variables v;
-    double x[v.size];
-    double y[v.size];
-    initialise(x, v.size);
-    initialise(y, v.size);
-    integrator_cblas(x, v);
-    integrator_cblas(y, v);
-    v.Q = 0;
-    integrator_cblas(x, v);
-    ASSERT_TRUE(stdev(x,v.size)<stdev(y,v.size));
-}
 TEST(Integrator, NoNoiseSteadyState){
     variables v;
     double x[v.size];
@@ -73,17 +43,6 @@ TEST(Integrator, Dampening){
     ASSERT_TRUE(stdev(x,v.size) < stdev(y,v.size));
 }
 
-TEST(Integrator, Congruency){
-    variables v;
-    double x[v.size];
-    double y[v.size];
-    initialise(x, v.size);
-    initialise(y, v.size);
-    integrator(x, v);
-    integrator_cblas(y, v);
-    cblas_daxpy(v.size, -1, x, 1, y, 1);
-    ASSERT_NEAR(0, sum(y, v.size), 1e-2);
-}
 
 TEST(Search, Known){
     variables v;

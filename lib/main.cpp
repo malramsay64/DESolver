@@ -4,6 +4,7 @@
 #include "search.h"
 #include "stochastic_search.h"
 
+
 using namespace std;
 
 // Global variables
