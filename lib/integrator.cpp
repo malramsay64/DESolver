@@ -14,7 +14,7 @@ double timestep(double dx, double q){
 void integrator(double *x, variables v){
     double time = 0;
     int step = 0;
-    int print_every = int((v.total_time/v.dt)/20)+1;
+    int print_every = int((v.total_time/v.dt)/100)+1;
     double *dH = (double *)malloc(v.size*sizeof(double));
     stringstream fname;
     string tmp;

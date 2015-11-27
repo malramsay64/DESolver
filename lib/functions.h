@@ -14,4 +14,18 @@ double sum(double *x, int size);
 void initialise( double *x, int size);
 int mode(int *x, int size);
 
+class stats{
+    long long n;
+    double M1,M2,M3,M4;
+public:
+    stats();
+    void push(double val);
+    double getMean();
+    double getVariance();
+    double getStandardDeviation();
+    double getSkewness();
+    double getKurtosis();
+    long long numVals();
+};
+
 #endif //SHEAR_FUNCTIONS_H

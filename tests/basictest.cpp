@@ -11,6 +11,21 @@ TEST(Stats, Mean){
     ASSERT_DOUBLE_EQ(1.25, mean(y,4));
 }
 
+TEST(StatsClass, Mean){
+    stats s = stats();
+    s.push(-1.0);
+    s.push(1.0);
+    s.push(-1.0);
+    s.push(1.0);
+    ASSERT_DOUBLE_EQ(0.0,s.getMean());
+    stats t = stats();
+    t.push(-1.0);
+    t.push(1.0);
+    t.push(2.0);
+    t.push(3.0);
+    ASSERT_DOUBLE_EQ(1.25, t.getMean());
+}
+
 TEST(Stats, Variance){
     double x[] {1.0};
     ASSERT_EQ(1, isnan(variance(x,1)));
@@ -18,6 +33,23 @@ TEST(Stats, Variance){
     ASSERT_DOUBLE_EQ(0.0, variance(y,4));
     double z[] {-1, -1, 0, 1, 1};
     ASSERT_DOUBLE_EQ(1, variance(z,5));
+}
+
+TEST(StatsClass,Variance){
+    stats x,y,z;
+    x.push(1.0);
+    ASSERT_EQ(1, isnan(x.getVariance()));
+    y.push(1.0);
+    y.push(1.0);
+    y.push(1.0);
+    y.push(1.0);
+    ASSERT_DOUBLE_EQ(0.0, y.getVariance());
+    z.push(-1);
+    z.push(-1);
+    z.push(0);
+    z.push(1);
+    z.push(1);
+    ASSERT_DOUBLE_EQ(1,z.getVariance());
 }
 
 TEST(Stats, Stdev){
@@ -52,6 +84,17 @@ TEST(Noise, Stdev){
     double n[size];
     noise(n, size, Q);
     ASSERT_NEAR(Q, stdev(n,size), 5./size);
+}
+
+TEST(Noise, Distribution){
+    long size = 1e8;
+    stats s = stats();
+    for (long i=0;i<size;i++){
+        s.push(noise(1));
+    }
+    ASSERT_NEAR(0.0,s.getMean(),1e-15);
+    ASSERT_NEAR(1.0,s.getVariance(), 1e-15);
+    ASSERT_NEAR(0.0,s.getSkewness(), 1e-15);
 }
 
 TEST(Differentiate, FiniteDifferenceDoubleMatrix){
