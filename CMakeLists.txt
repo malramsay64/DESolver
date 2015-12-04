@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 project(shear)
 
+if (NOT CMAKE_BUILD_TYPE)
+    message(STATUS "NO build type selected, default to Release")
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_subdirectory(tests/lib/gtest-1.7.0)
