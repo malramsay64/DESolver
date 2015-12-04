@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <valarray>
 #include "noise.h"
 #include "differentiate.h"
 #include "output.h"

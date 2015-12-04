@@ -1,16 +1,17 @@
 #include "noise.h"
 
-std::normal_distribution<double> distribution(0, 1);
-std::random_device generator;
-
-int noise(double *n, int size, double Q){
-    for (int i=0; i<size; i++){
-        n[i]=distribution(generator)*Q;
-    }
-    return 0;
+Noise::Noise() {
+    distribution = std::normal_distribution<double>{0,1};
 }
 
-double noise(double Q){
-    return distribution(generator)*Q;
+Noise::Noise(double a){
+    distribution = std::normal_distribution<double>{0,a};
 }
 
+void Noise::setAmplitude(double a) {
+    distribution = std::normal_distribution<double>{0,a};
+}
+
+double Noise::getVal(){
+    return distribution(generator);
+}

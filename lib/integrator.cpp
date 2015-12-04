@@ -11,10 +11,11 @@ double timestep(double dx, double q){
     }
 }
 
-void integrator(double *x, variables v){
+void integrator(double x, variables v){
     double time = 0;
     int step = 0;
     int print_every = int((v.total_time/v.dt)/100)+1;
+    valarray<double> dH(v.size);
     double *dH = (double *)malloc(v.size*sizeof(double));
     stringstream fname;
     string tmp;
@@ -23,14 +24,16 @@ void integrator(double *x, variables v){
     if (v.print){
         print(x, v.size, time, v.dx, tmp.c_str(), true);
     }
+    Noise noise{v.Q/sqrt(v.dt/(v.dx*v.dx))};
     while (time < v.total_time) {
         for (int i = 0; i < v.size; i++) {
-            dH[i] = v.delta + finite_difference_double(x, v.size, v.dx, i);
+            dH[i] = finite_difference_double(x, v.size, v.dx, i);
             if (dH[i] < 0) {
                 dH[i] += v.A * dH[i];
             }
+            d[H] +=
             if (step % v.delay == 0) {
-                dH[i] += noise(v.Q/sqrt(v.dt/(v.dx*v.dx)));
+                dH[i] += noise.getVal();
             }
             dH[i] *= v.dt;
         }

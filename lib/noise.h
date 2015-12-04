@@ -3,9 +3,14 @@
 #ifndef noise_h
 #define noise_h
 
-int noise(double *n, int size, double Q);
-double noise(double Q);
-
-
+class Noise {
+    std::normal_distribution<double> distribution;
+    std::random_device generator;
+  public;
+    Noise();
+    Noise(double);
+    void setAmplitude(double);
+    double getVal();
+};
 
 #endif
