@@ -25,10 +25,11 @@ void integrator(double *x, variables v){
     }
     while (time < v.total_time) {
         for (int i = 0; i < v.size; i++) {
-            dH[i] = v.delta + finite_difference_double(x, v.size, v.dx, i);
+            dH[i] = finite_difference_double(x, v.size, v.dx, i);
             if (dH[i] < 0) {
                 dH[i] += v.A * dH[i];
             }
+            dH[i] += v.delta;
             if (step % v.delay == 0) {
                 dH[i] += noise(v.Q/sqrt(v.dt/(v.dx*v.dx)));
             }
