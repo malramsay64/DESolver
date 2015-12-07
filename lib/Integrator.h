@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include "Equation.h"
+#include "input.h"
 
 class Integrator {
 public:
@@ -29,18 +30,46 @@ protected:
     double timestep;
     long print_freq;
     std::ofstream outfile;
-    virtual void step() = 0;
+
+    virtual void step();
 public:
     Numerical_Integrator();
+
+    ~Numerical_Integrator();
     Numerical_Integrator(NDEquation,size_t, double, double);
     Numerical_Integrator(NDEquation,size_t, double, double, int);
     Numerical_Integrator(NDEquation,size_t, double, double, int, std::string);
+
+    Numerical_Integrator(const Numerical_Integrator &);
     void print();
+
+    void integrate();
+
+    NDEquation &getEquation();
+
+    size_t getSize() const;
+
+    std::valarray<double> &getX();
+
+    double getTotalTime() const;
+
+    int getCurrStep() const;
+
+    long getPrintFreq() const;
+
+    double getTimestep() const;
+
+    std::ofstream &getOutfile();
+
+    friend std::ostream &operator<<(std::ostream &os, const Numerical_Integrator &n);
 };
 
 class Euler : public Numerical_Integrator {
 public:
     void step();
+
+    Euler(const variables &);
 };
+
 
 #endif //SHEAR_INTEGRATOR_H

@@ -6,7 +6,7 @@
 class Noise {
     std::normal_distribution<double> distribution;
     std::random_device generator;
-  public;
+public:
     Noise();
     Noise(double);
     void setAmplitude(double);

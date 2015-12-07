@@ -5,7 +5,6 @@
 #ifndef SHEAR_SEARCH_H
 #define SHEAR_SEARCH_H
 
-#include "integrator.h"
 #include "stability.h"
 #include "input.h"
 
