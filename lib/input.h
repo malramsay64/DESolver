@@ -32,6 +32,6 @@ void useage();
 
 variables &get_vars(int argc, char **argv);
 
-std::string &&make_fname(const variables &);
+std::string make_fname(const variables &);
 
 #endif //SHEAR_INPUT_H

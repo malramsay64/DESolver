@@ -13,12 +13,20 @@ double mean(double *x, int size){
     return res;
 }
 
-stats::stats(){
+Stats::Stats(){
     M1 = M2 = M3 = M4 = 0.0;
     n=0;
 }
 
-void stats::push(double val) {
+Stats::Stats(const std::valarray<double> &x){
+    M1=M2=M3=M4=0.0;
+    n=0;
+    for (size_t i = 0; i != x.size(); i++){
+        push(x[i]);
+    }
+}
+
+void Stats::push(double val) {
     double delta, delta_n, delta_n2, term1;
     long long n1 = n;
     n++;
@@ -32,20 +40,20 @@ void stats::push(double val) {
     M2 += term1;
 }
 
-double stats::getMean() {
+double Stats::getMean() {
     return M1;
 }
 
-double stats::getVariance() {
+double Stats::getVariance() {
     return M2/(n-1.0);
 }
-double stats::getStandardDeviation(){
+double Stats::getStandardDeviation(){
     return sqrt(getVariance());
 }
-double stats::getSkewness(){
+double Stats::getSkewness(){
     return sqrt(double(n))*M3/pow(M2,1.5);
 }
-double stats::getKurtosis() {
+double Stats::getKurtosis() {
     return double(n)*M4/(M2*M2)-3.0;
 }
 
@@ -66,6 +74,7 @@ double variance(double *x, int size){
     }
 
 }
+
 
 double stdev(double *x, int size){
     return sqrt(variance(x,size));

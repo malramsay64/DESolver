@@ -54,7 +54,7 @@ static struct option long_options[] = {
 };
 static string short_options = "s:q:t:a:A:D:x:d:f:m:prSh";
 
-string &&make_fname(const variables &v) {
+string make_fname(const variables &v) {
     stringstream fname;
     fname << v.total_time << "-" << v.dt << "-" << v.size << "-" << v.Q << "-" << v.A << "-" << v.delta << ".dat";
     return string{fname.str()};

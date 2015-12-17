@@ -28,6 +28,5 @@ set(SOURCE_FILES
         lib/Integrator.h)
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
-add_executable(runBasicTests tests/basictest.cpp ${SOURCE_FILES})
-add_executable(runComplexTests tests/complextest.cpp ${SOURCE_FILES})
+add_executable(runTests tests/runTests.cpp ${SOURCE_FILES})
 

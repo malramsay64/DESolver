@@ -1,15 +1,12 @@
 #include "noise.h"
 
-Noise::Noise() {
-    distribution = std::normal_distribution<double>{0,1};
-}
+
 
 Noise::Noise(double a){
-    distribution = std::normal_distribution<double>{0,a};
-}
-
-void Noise::setAmplitude(double a) {
-    distribution = std::normal_distribution<double>{0,a};
+    /*
+     * Precondition: a not negative
+     */
+    (a < 0) ? throw std::invalid_argument{"a"} : distribution = std::normal_distribution<double>{0, a};
 }
 
 double Noise::getVal(){

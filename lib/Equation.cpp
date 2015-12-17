@@ -5,12 +5,27 @@
 #include "Equation.h"
 
 using namespace std;
-Finite_Double_Difference::Finite_Double_Difference() {
+
+
+Finite_Difference::Finite_Difference() {}
+
+valarray<double> Finite_Difference::increment(const std::valarray<double> &x, double dt) {
+    valarray<double> h(0., x.size());
+    if (x.size() < 2) return h;
+    for (size_t i = 0; i < x.size()-1; i++){
+        h[i] = (x[i+1] - x[i]);
+    }
+    // Edge cases
+    h[x.size()-1] = (x[0] - x[x.size()-1]);
+    return h;
 }
 
-valarray<double> Finite_Double_Difference::increment(valarray<double> &x, double dt) {
-    double dx2 = pow(1./x.size(),2);
+Finite_Double_Difference::Finite_Double_Difference() {}
+
+valarray<double> Finite_Double_Difference::increment(const valarray<double> &x, double dt) {
     valarray<double> h(0., x.size());
+    if (x.size() < 3) return h;
+    double dx2 = pow(1./x.size(),2);
     for (size_t i = 1; i < x.size()-1; i++){
         h[i] = (x[i-1]+x[i+1] - 2*x[i])/dx2;
     }
@@ -22,12 +37,6 @@ valarray<double> Finite_Double_Difference::increment(valarray<double> &x, double
 
 Shear::Shear(){
     A = 0;
-    D = 0;
-    Q = 1;
-}
-
-Shear::Shear(double a){
-    A = a;
     D = 0;
     Q = 1;
 }
@@ -64,11 +73,11 @@ ostream &operator<<(ostream &os, const NDEquation &s) {
     return os;
 }
 
-valarray<double> NDEquation::increment(std::valarray<double> &x, double dt) {
+valarray<double> NDEquation::increment(const std::valarray<double> &x, double dt) {
     return valarray<double>(0., x.size());
 }
 
-valarray<double> Shear::increment(std::valarray<double> &x, double dt) {
+valarray<double> Shear::increment(const std::valarray<double> &x, double dt) {
     valarray<double> h = move(d2.increment(x, dt));
     for (auto i =0; i< x.size(); i++){
         if (h[i] < 0) {
