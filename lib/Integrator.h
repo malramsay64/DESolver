@@ -12,8 +12,10 @@
 #include <valarray>
 #include <iostream>
 #include <fstream>
-#include "Equation.h"
+#include <iomanip>
 #include "input.h"
+
+class NDEquation;
 
 class Integrator {
 public:
@@ -22,30 +24,29 @@ public:
 
 class Numerical_Integrator: public Integrator {
 protected:
-    NDEquation eq;
     size_t size;
     std::valarray<double> x;
     double total_time;
     int curr_step;
     double timestep;
     long print_freq;
-    std::ofstream outfile;
+    std::string fname;
 
-    virtual void step();
 public:
     Numerical_Integrator();
 
     ~Numerical_Integrator();
-    Numerical_Integrator(NDEquation,size_t, double, double);
-    Numerical_Integrator(NDEquation,size_t, double, double, int);
-    Numerical_Integrator(NDEquation,size_t, double, double, int, std::string);
+    Numerical_Integrator(size_t, double, double);
+    Numerical_Integrator(size_t, double, double, int);
+    Numerical_Integrator(size_t, double, double, int, std::string);
 
     Numerical_Integrator(const Numerical_Integrator &);
+    Numerical_Integrator (Numerical_Integrator && );
+    Numerical_Integrator& operator=(const Numerical_Integrator &) = default;
+
     void print();
 
-    void integrate();
-
-    NDEquation &getEquation();
+    void integrate(const NDEquation &);
 
     size_t getSize() const;
 
@@ -61,14 +62,23 @@ public:
 
     std::ofstream &getOutfile();
 
+    virtual void step(const NDEquation &) = 0;
+
+    double getCharVal() const;
+
     friend std::ostream &operator<<(std::ostream &os, const Numerical_Integrator &n);
 };
 
 class Euler : public Numerical_Integrator {
 public:
-    void step();
+    void integrate(const NDEquation & n) ;
+    void step(const NDEquation& e);
 
+    Euler();
     Euler(const variables &);
+    ~Euler();
+
+    double getCharVal() const;
 };
 
 

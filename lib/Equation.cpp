@@ -6,10 +6,19 @@
 
 using namespace std;
 
+DEquation::DEquation() { }
 
-Finite_Difference::Finite_Difference() {}
+NDEquation::NDEquation() { }
 
-valarray<double> Finite_Difference::increment(const std::valarray<double> &x, double dt) {
+Finite_Difference::Finite_Difference() { }
+Finite_Difference::~Finite_Difference() { }
+
+double Finite_Difference::solve() {
+    return 0;
+}
+
+
+valarray<double> Finite_Difference::increment(const std::valarray<double> &x, double dt) const {
     valarray<double> h(0., x.size());
     if (x.size() < 2) return h;
     for (size_t i = 0; i < x.size()-1; i++){
@@ -20,9 +29,22 @@ valarray<double> Finite_Difference::increment(const std::valarray<double> &x, do
     return h;
 }
 
-Finite_Double_Difference::Finite_Double_Difference() {}
+Finite_Double_Difference::Finite_Double_Difference()  {
+    myIntegrator = Euler{};
+}
 
-valarray<double> Finite_Double_Difference::increment(const valarray<double> &x, double dt) {
+Finite_Double_Difference::Finite_Double_Difference(const Finite_Double_Difference &){
+    myIntegrator = Euler{};
+}
+
+Finite_Double_Difference::~Finite_Double_Difference(){
+}
+
+double Finite_Double_Difference::solve() {
+   return 0;
+}
+
+valarray<double> Finite_Double_Difference::increment(const valarray<double> &x, double dt) const {
     valarray<double> h(0., x.size());
     if (x.size() < 3) return h;
     double dx2 = pow(1./x.size(),2);
@@ -35,22 +57,41 @@ valarray<double> Finite_Double_Difference::increment(const valarray<double> &x, 
     return h;
 }
 
-Shear::Shear(){
+Shear::Shear() {
     A = 0;
     D = 0;
     Q = 1;
+    myIntegrator = Euler{};
 }
 
 Shear::Shear(double a,double d, double q){
     A = a;
     D = d;
     Q = q;
+    myIntegrator = Euler{};
 }
 
 Shear::Shear(const Shear &s) {
     A = s.A;
     D = s.D;
     Q = s.Q;
+    myIntegrator = Euler{};
+}
+
+Shear::Shear(const Euler & ni, double a, double d, double q) {
+    A = a;
+    D = d;
+    Q = q;
+    myIntegrator = ni;
+}
+
+Shear::Shear(const variables& v){
+    A = v.A;
+    D = v.delta;
+    Q = v.Q;
+    myIntegrator = Euler{v};
+    runSearch = v.run_search;
+    search = Binary_Search(v);
 }
 
 double Shear::getA() const {
@@ -65,6 +106,25 @@ double Shear::getD() const {
     return D;
 }
 
+double Shear::solve() {
+    if (runSearch){
+        double meanVal = 0;
+        while (!search.done()){
+            meanVal = Integrate();
+            search.getVal(D, (meanVal < 0 ? -1 : 1) );
+        }
+        return meanVal;
+    }
+    else {
+        return Integrate();
+    }
+}
+
+double Shear::Integrate() {
+    myIntegrator.integrate(*this);
+    return myIntegrator.getCharVal();
+}
+
 ostream &operator<<(ostream &os, const Shear &s) {
     return os << s.getA() << ' ' << s.getD() << ' ' << s.getQ();
 }
@@ -73,12 +133,12 @@ ostream &operator<<(ostream &os, const NDEquation &s) {
     return os;
 }
 
-valarray<double> NDEquation::increment(const std::valarray<double> &x, double dt) {
+valarray<double> NDEquation::increment(const std::valarray<double> &x, double dt) const {
     return valarray<double>(0., x.size());
 }
 
-valarray<double> Shear::increment(const std::valarray<double> &x, double dt) {
-    valarray<double> h = move(d2.increment(x, dt));
+valarray<double> Shear::increment(const std::valarray<double> &x, double dt) const {
+    valarray<double> h = d2.increment(x, dt);
     for (auto i =0; i< x.size(); i++){
         if (h[i] < 0) {
             h[i] += h[i]*A;

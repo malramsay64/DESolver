@@ -53,6 +53,8 @@
 #include <iomanip>
 #include <string>
 #include <iostream>
+#include "Integrator.h"
+#include "Search.h"
 
 #ifndef SHEAR_EQUATION_H
 #define SHEAR_EQUATION_H
@@ -60,44 +62,64 @@
 
 class Equation {
 public:
-    //virtual void solve()=0;
+    virtual double solve()=0;
 };
 
 class DEquation: public Equation {
 public:
-
+    DEquation();
+    double solve(){return 0;};
 };
 
 
 class NDEquation: public  DEquation{
+protected:
 public:
-    std::valarray<double> increment(const std::valarray<double> &, double);
+
+    NDEquation();
+    NDEquation(const NDEquation&);
+
+    double solve(){return 0;};
+
+    std::valarray<double> increment(const std::valarray<double> &, double) const;
 
     friend std::ostream &operator<<(std::ostream &, const NDEquation &);
 };
 
-class Finite_Difference: public NDEquation {
+class Finite_Difference: public virtual NDEquation {
+    Euler myIntegrator{};
 public:
     Finite_Difference();
+    ~Finite_Difference();
+    double solve();
 
-    std::valarray<double> increment(const std::valarray<double> &, double=1);
+    std::valarray<double> increment(const std::valarray<double> &, double=1) const ;
 };
 
-class Finite_Double_Difference: public  NDEquation {
+class Finite_Double_Difference: public virtual NDEquation {
+    Euler myIntegrator{};
 public:
     Finite_Double_Difference();
-
-    std::valarray<double> increment(const std::valarray<double> &, double=1);
+    Finite_Double_Difference(const Finite_Double_Difference &);
+    ~Finite_Double_Difference();
+    double solve();
+    std::valarray<double> increment(const std::valarray<double> &, double=1) const ;
 };
 
-class Shear : public NDEquation {
+class Shear : public virtual NDEquation {
+
+    Euler myIntegrator{};
     double A;
     double Q;
     double D;
     Finite_Double_Difference d2{};
+    Search search;
+    bool runSearch;
 public:
     Shear();
-    Shear(double A, double D=0, double Q=1);
+    Shear(double a, double d=0, double q=1);
+    Shear(const Euler &, double a, double d=0, double q=1);
+    Shear(const variables& v);
 
     Shear(const Shear &);
 
@@ -107,7 +129,10 @@ public:
 
     double getD() const;
 
-    std::valarray<double> increment(const std::valarray<double> &, double);
+    std::valarray<double> increment(const std::valarray<double> &, double) const;
+    double Integrate();
+
+    double solve();
 
     friend std::ostream &operator<<(std::ostream &os, const Shear &s);
 };

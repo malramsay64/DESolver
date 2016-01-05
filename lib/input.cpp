@@ -60,7 +60,7 @@ string make_fname(const variables &v) {
     return string{fname.str()};
 }
 
-variables &get_vars(int argc, char **argv) {
+variables get_vars(int argc, char **argv) {
     if (argc == 1) {
         useage();
         exit(0);

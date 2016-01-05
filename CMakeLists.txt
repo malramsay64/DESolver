@@ -22,10 +22,13 @@ set(SOURCE_FILES
         lib/functions.h
         lib/input.cpp
         lib/input.h
+        lib/Integrator.cpp
+        lib/Integrator.h
         lib/Equation.cpp
         lib/Equation.h
-        lib/Integrator.cpp
-        lib/Integrator.h)
+        lib/Search.cpp
+        lib/Search.h
+        )
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
 add_executable(runTests tests/runTests.cpp ${SOURCE_FILES})

@@ -3,6 +3,7 @@
 //
 
 #include "Integrator.h"
+#include "Equation.h"
 
 
 Numerical_Integrator::Numerical_Integrator() {
@@ -14,70 +15,68 @@ Numerical_Integrator::Numerical_Integrator() {
 }
 
 Numerical_Integrator::~Numerical_Integrator() {
-    outfile.close();
 }
 
-Numerical_Integrator::Numerical_Integrator(NDEquation e, size_t s, double time, double dt) {
-    eq = e;
+Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt) {
     size = s;
     x = std::valarray<double>(0., s);
     total_time = time;
     curr_step = 0;
     timestep = dt;
     print_freq = ceill(total_time / timestep);
+    fname = "outfile.dat";
 }
 
-Numerical_Integrator::Numerical_Integrator(NDEquation e,size_t s, double time, double dt, int num_print) {
-    eq = e;
+Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int num_print) {
     size = s;
     x = std::valarray<double>(0., s);
     total_time = time;
     curr_step = 0;
     timestep = dt;
     print_freq = floorl(total_time/timestep)/num_print;
-    outfile.open("outfile.dat");
+    fname = "outfile.dat";
 }
 
-Numerical_Integrator::Numerical_Integrator(NDEquation e, size_t s, double time, double dt, int num_print, std::string fname) {
-    eq = e;
+Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int num_print, std::string infname) {
     size = s;
     x = std::valarray<double>(0., s);
     total_time = time;
     curr_step = 0;
     timestep = dt;
     print_freq = floorl(total_time/timestep)/num_print;
-    outfile.open(fname.c_str());
+    fname = infname;
 }
 
-/*
 Numerical_Integrator::Numerical_Integrator(const Numerical_Integrator& ni) {
-    eq = ni.eq;
     size = ni.size;
-    x = std::valarray{ni.x};
+    x = std::valarray<double>{ni.x};
     total_time = ni.total_time;
     curr_step = ni.curr_step;
     print_freq = ni.print_freq;
-    outfile = make_fname(;
+    fname = ni.fname;
 }
-*/
+
+Numerical_Integrator::Numerical_Integrator(Numerical_Integrator &&ni) {
+    size = ni.size;
+    x = std::move(ni.x);
+    total_time = ni.total_time;
+    curr_step = ni.curr_step;
+    print_freq = ni.print_freq;
+    fname = std::move(ni.fname);
+}
 
 void Numerical_Integrator::print() {
+    std::ofstream outfile{fname};
     for(int i=0;i<x.size(); i++){
         outfile << std::fixed << std::setprecision(5) << x[i] << ' ' << std::endl;
     }
 }
 
-void Numerical_Integrator::step() {
-}
 
-void Numerical_Integrator::integrate() {
+void Numerical_Integrator::integrate(const NDEquation & n) {
     while (timestep * curr_step++ < total_time) {
-        step();
+        step(n);
     }
-}
-
-NDEquation &Numerical_Integrator::getEquation() {
-    return eq;
 }
 
 size_t Numerical_Integrator::getSize() const {
@@ -104,32 +103,54 @@ long Numerical_Integrator::getPrintFreq() const {
     return print_freq;
 }
 
-std::ofstream &Numerical_Integrator::getOutfile() {
-    return outfile;
+double Numerical_Integrator::getCharVal() const {
+    return 0;
 }
 
+
+
 std::ostream &operator<<(std::ostream &os, const Numerical_Integrator &n) {
-    return os << n.eq << ' ' << n.getSize() << ' ' << n.getTotalTime() << ' ' << n.getCurrStep()\
+    return os << n.getSize() << ' ' << n.getTotalTime() << ' ' << n.getCurrStep()\
  << ' ' << n.getTimestep() << ' ' << n.getPrintFreq();
 }
 
+Euler::Euler(){
+    Euler(variables{});
+}
+
 Euler::Euler(const variables &v) {
-    eq = Shear{v.A, v.delta, v.Q};
     size = v.size;
     x = std::valarray<double>(0., v.size);
     total_time = v.total_time;
     curr_step = 0;
     timestep = v.dt;
     print_freq = v.print ? floorl(total_time / timestep) / 100 : ceill(total_time / timestep);
-    outfile.open(make_fname(v));
 }
 
-void Euler::step() {
-    x += move(eq.increment(x, timestep));
+Euler::~Euler(){
+
+}
+
+void Euler::integrate(const NDEquation & n) {
+    while (timestep * curr_step++ < total_time) {
+        step(n);
+    }
+}
+
+void Euler::step(const NDEquation &e) {
     ++curr_step;
     if (curr_step % print_freq == 0){
         print();
     }
+    x += e.increment(x, timestep);
+}
+
+double Euler::getCharVal() const {
+    Stats s{};
+    for (auto i=0; i<x.size(); i++){
+        s.push(x[i]);
+    }
+    return s.getMean();
 }
 /*
 std::ostream& operator<<(std::ostream& os, const Numerical_Integrator& n){

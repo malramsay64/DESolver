@@ -6,6 +6,7 @@
 #include "../lib/noise.h"
 #include "../lib/Equation.h"
 #include "../lib/input.h"
+#include "../lib/Search.h"
 
 using namespace std;
 
@@ -156,6 +157,66 @@ TEST(Equation, Shear){
 
 
 TEST(Input, Blank){
+}
+
+TEST(BinarySearch, Null){
+    Binary_Search bs{};
+    double v = bs.getVal(0, 0);
+    ASSERT_DOUBLE_EQ(0, v);
+}
+
+TEST(BinarySearch, Above){
+    Binary_Search bs{};
+    double v = bs.getVal(0, 1);
+    ASSERT_DOUBLE_EQ(-0.1, v);
+}
+
+TEST(BinarySearch, Below){
+    Binary_Search bs{};
+    double v = bs.getVal(0, -1);
+    ASSERT_DOUBLE_EQ(0.1, v);
+}
+
+TEST(BinarySearch, LargeDelta){
+    Binary_Search bs{1};
+    double v = bs.getVal(0, -1);
+    ASSERT_DOUBLE_EQ(1, v);
+}
+
+TEST(BinarySearch, Search){
+    Binary_Search bs1{1};
+    double val = 5;
+    double v = 0;
+    while (val != v){
+        v = val;
+        val = bs1.getVal(val, int(val));
+    }
+    ASSERT_DOUBLE_EQ(0, v);
+    Binary_Search bs2{1};
+    val = -5;
+    v = 0;
+    while (val != v){
+        v = val;
+        val = bs2.getVal(val, int(val));
+    };
+    ASSERT_DOUBLE_EQ(0, v);
+}
+
+TEST(BinarySearch, Iterations){
+    Binary_Search bs{};
+    while (!bs.done()){
+        bs.getVal(1,1);
+    }
+    ASSERT_EQ(101,bs.numIters());
+}
+
+TEST(BinarySearch, Function){
+    Binary_Search bs{};
+    double val = 1.2;
+    while (!bs.done()){
+        val = bs.getVal(tan(val), tan(val) < 0 ? -1 : 1);
+    }
+    ASSERT_NEAR(0, tan(val), 1e-5);
 }
 
 

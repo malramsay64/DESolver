@@ -1,5 +1,6 @@
 #include "input.h"
 #include "Integrator.h"
+#include "Equation.h"
 
 using namespace std;
 
@@ -8,9 +9,9 @@ using namespace std;
 
 
 int main (int argc, char** argv){
-    Euler i{get_vars(argc, argv)};
+    Shear i{get_vars(argc, argv)};
 
-    i.integrate();
+    cout << i.solve() << endl;
 
     cout << i << endl;
     return 0;

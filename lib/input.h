@@ -30,7 +30,7 @@ struct variables {
 
 void useage();
 
-variables &get_vars(int argc, char **argv);
+variables get_vars(int argc, char **argv);
 
 std::string make_fname(const variables &);
 
