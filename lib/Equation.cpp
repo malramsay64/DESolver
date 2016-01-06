@@ -109,7 +109,6 @@ double Shear::getD() const {
 double Shear::solve() {
     if (runSearch){
         double meanVal = 0;
-        cerr << defaultfloat;
         cerr << *this << endl;
         while (!search.done()){
             myIntegrator.reset();
