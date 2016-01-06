@@ -15,9 +15,10 @@ protected:
     int iteration;
     bool isdone;
 public:
-    int numIters() {return iteration;};
-    int done(){return isdone;};
+    int numIters() const {return iteration;};
+    int done() const {return isdone;};
     double getVal(double, int) { return 0; };
+    double getTolerance() const { return tolerance; };
 
 };
 

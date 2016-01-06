@@ -30,10 +30,13 @@ void useage(){
             "    --search\n"
             "        Searches for a point on the steady state curve\n"
             "        by manipulating delta\n\n"
+            << endl;
+    /*
             "    --range\n"
             "        Provides a range of delta values at which there\n"
-            "        is a steasy state\n\n"
+            "        is a steady state\n\n"
     << endl;
+    */
 }
 
 

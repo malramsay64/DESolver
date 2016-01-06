@@ -16,6 +16,7 @@
 #include "input.h"
 
 class NDEquation;
+class Shear;
 
 class Integrator {
 public:
@@ -44,9 +45,11 @@ public:
     Numerical_Integrator (Numerical_Integrator && );
     Numerical_Integrator& operator=(const Numerical_Integrator &) = default;
 
-    void print();
+    void print() const;
 
-    void integrate(const NDEquation &);
+    void reset();
+
+    void integrate(Shear &);
 
     size_t getSize() const;
 
@@ -60,9 +63,9 @@ public:
 
     double getTimestep() const;
 
-    std::ofstream &getOutfile();
+    std::ostream &getOutfile();
 
-    virtual void step(const NDEquation &) = 0;
+    virtual void step(Shear &) = 0;
 
     double getCharVal() const;
 
@@ -71,8 +74,8 @@ public:
 
 class Euler : public Numerical_Integrator {
 public:
-    void integrate(const NDEquation & n) ;
-    void step(const NDEquation& e);
+    void integrate(Shear & n) ;
+    void step(Shear& e);
 
     Euler();
     Euler(const variables &);

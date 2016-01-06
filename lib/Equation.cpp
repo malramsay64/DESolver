@@ -111,7 +111,9 @@ double Shear::solve() {
         double meanVal = 0;
         while (!search.done()){
             meanVal = Integrate();
-            search.getVal(D, (meanVal < 0 ? -1 : 1) );
+            cout << "Trying: " << D << " Value: " << scientific << meanVal << endl;
+            D = search.getVal(D, (meanVal < 0 ? -1 : 1) );
+            myIntegrator.reset();
         }
         return meanVal;
     }
@@ -123,6 +125,24 @@ double Shear::solve() {
 double Shear::Integrate() {
     myIntegrator.integrate(*this);
     return myIntegrator.getCharVal();
+}
+
+void Shear::printX() const {
+    myIntegrator.print();
+}
+
+valarray<double> Shear::increment(const std::valarray<double> &x, double dt) {
+    valarray<double> h = d2.increment(x, dt);
+    double noise_factor = Q/sqrt(dt/(pow(1./x.size(),2)));
+    for (auto i =0; i< x.size(); i++){
+        if (h[i] < 0) {
+            h[i] += h[i]*A;
+        }
+        h[i] += D;
+        h[i] += n.getVal()*noise_factor;
+        h[i] *= dt;
+    }
+    return h;
 }
 
 ostream &operator<<(ostream &os, const Shear &s) {
@@ -137,14 +157,3 @@ valarray<double> NDEquation::increment(const std::valarray<double> &x, double dt
     return valarray<double>(0., x.size());
 }
 
-valarray<double> Shear::increment(const std::valarray<double> &x, double dt) const {
-    valarray<double> h = d2.increment(x, dt);
-    for (auto i =0; i< x.size(); i++){
-        if (h[i] < 0) {
-            h[i] += h[i]*A;
-        }
-        h[i] += D;
-        h[i] *= dt;
-    }
-    return h;
-}

@@ -55,6 +55,7 @@
 #include <iostream>
 #include "Integrator.h"
 #include "Search.h"
+#include "noise.h"
 
 #ifndef SHEAR_EQUATION_H
 #define SHEAR_EQUATION_H
@@ -113,7 +114,8 @@ class Shear : public virtual NDEquation {
     double Q;
     double D;
     Finite_Double_Difference d2{};
-    Search search;
+    Binary_Search search;
+    Noise n{};
     bool runSearch;
 public:
     Shear();
@@ -128,8 +130,17 @@ public:
     double getQ() const;
 
     double getD() const;
+    double getTotalTime() const {return myIntegrator.getTotalTime();};
+    double getTimestep() const {return myIntegrator.getTimestep();};
+    double getSize() const {return myIntegrator.getSize();};
+    double getPrintFreq() const {return myIntegrator.getPrintFreq();};
+    double getCurrStep() const {return myIntegrator.getCurrStep();};
+    double getCharVal() const {return myIntegrator.getCharVal();};
+    void printX() const;
 
-    std::valarray<double> increment(const std::valarray<double> &, double) const;
+    double getRand() {return n.getVal();};
+
+    std::valarray<double> increment(const std::valarray<double> &, double);
     double Integrate();
 
     double solve();

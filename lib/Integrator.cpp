@@ -65,15 +65,22 @@ Numerical_Integrator::Numerical_Integrator(Numerical_Integrator &&ni) {
     fname = std::move(ni.fname);
 }
 
-void Numerical_Integrator::print() {
+void Numerical_Integrator::reset(){
+    x = std::valarray<double>(0.,size);
+    curr_step = 0;
+
+}
+
+void Numerical_Integrator::print() const {
     std::ofstream outfile{fname};
     for(int i=0;i<x.size(); i++){
-        outfile << std::fixed << std::setprecision(5) << x[i] << ' ' << std::endl;
+        outfile << std::scientific << std::setprecision(5) << x[i] << ' ';
     }
+    outfile << std::endl;
 }
 
 
-void Numerical_Integrator::integrate(const NDEquation & n) {
+void Numerical_Integrator::integrate(Shear & n) {
     while (timestep * curr_step++ < total_time) {
         step(n);
     }
@@ -115,7 +122,13 @@ std::ostream &operator<<(std::ostream &os, const Numerical_Integrator &n) {
 }
 
 Euler::Euler(){
-    Euler(variables{});
+    variables v{};
+    size = v.size;
+    x = std::valarray<double>(0., v.size);
+    total_time = v.total_time;
+    curr_step = 0;
+    timestep = v.dt;
+    print_freq = v.print ? floorl(total_time / timestep) / 100 : ceill(total_time / timestep);
 }
 
 Euler::Euler(const variables &v) {
@@ -131,13 +144,13 @@ Euler::~Euler(){
 
 }
 
-void Euler::integrate(const NDEquation & n) {
+void Euler::integrate(Shear & n) {
     while (timestep * curr_step++ < total_time) {
         step(n);
     }
 }
 
-void Euler::step(const NDEquation &e) {
+void Euler::step(Shear &e) {
     ++curr_step;
     if (curr_step % print_freq == 0){
         print();
@@ -158,3 +171,6 @@ std::ostream& operator<<(std::ostream& os, const Numerical_Integrator& n){
             << " " << n.getTimestep() << " " << n.getPrintFreq();
 }
  */
+std::ostream &Numerical_Integrator::getOutfile() {
+    return std::cout;
+}

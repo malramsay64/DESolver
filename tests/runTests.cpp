@@ -10,6 +10,13 @@
 
 using namespace std;
 
+void printValArray(valarray<double> r){
+    for (auto i=0; i<r.size(); i++){
+        cout << r[i] << " ";
+    }
+    cout << endl;
+}
+
 TEST(Stats, Mean){
     double x[] {-1.0, 1.0, -1.0, 1.0};
     ASSERT_DOUBLE_EQ(0.0, mean(x,4));
@@ -152,9 +159,41 @@ TEST(Equation, Shear){
     s = Shear{};
     for (int i=0;i<iters;i++) x = s.increment(x, 1.);
     Stats st{x};
-    ASSERT_NEAR(0, st.getMean(), precision);
+    //ASSERT_NEAR(0, st.getMean(), precision);
 }
 
+TEST(Euler, DefaultConstructor){
+    Euler e{};
+    variables v{};
+    ASSERT_DOUBLE_EQ(v.total_time, e.getTotalTime());
+    ASSERT_DOUBLE_EQ(v.size, e.getSize());
+    ASSERT_DOUBLE_EQ(v.dt, e.getTimestep());
+}
+
+TEST(Euler, VariableConstructor){
+    variables v{};
+    v.total_time = 1;
+    v.dt = 1e-8;
+    Euler e{v};
+    ASSERT_DOUBLE_EQ(v.total_time, e.getTotalTime());
+    ASSERT_DOUBLE_EQ(v.size, e.getSize());
+    ASSERT_DOUBLE_EQ(v.dt, e.getTimestep());
+}
+
+
+TEST(Euler, Step){
+    variables v{};
+    v.dt = 1;
+    v.total_time = 1;
+    v.delta = 1;
+    v.Q = 0;
+    Shear s{v};
+    Euler e{v};
+    valarray<double> r = s.increment(valarray<double>(0.,e.getSize()), e.getTimestep());
+    e.step(s);
+    ASSERT_DOUBLE_EQ(1, accumulate(r)/r.size());
+    ASSERT_DOUBLE_EQ(1, e.getCharVal());
+}
 
 TEST(Input, Blank){
 }
@@ -219,6 +258,170 @@ TEST(BinarySearch, Function){
     ASSERT_NEAR(0, tan(val), 1e-5);
 }
 
+TEST(Shear, DefaultConstructor){
+    Shear s{};
+    ASSERT_DOUBLE_EQ(0, s.getA());
+    ASSERT_DOUBLE_EQ(0, s.getD());
+    ASSERT_DOUBLE_EQ(1, s.getQ());
+    ASSERT_DOUBLE_EQ(0.01, s.getTotalTime());
+    ASSERT_DOUBLE_EQ(1e-6, s.getTimestep());
+    ASSERT_EQ(100, s.getSize());
+}
+
+
+TEST(Shear, Rand){
+    Shear s{};
+    size_t size{100};
+    valarray<double> x(size);
+    for (int i=0; i<size; i++){
+        x[i] = s.getRand();
+    }
+    ASSERT_NE(0, accumulate(x));
+}
+
+TEST(Shear, Increment){
+    Shear s{0, 1, 0};
+    valarray<double> r = s.increment(valarray<double>(0., 10), 1);
+    ASSERT_DOUBLE_EQ(10, accumulate(r));
+}
+
+TEST(Shear, IncrementRand){
+    Shear s{};
+    valarray<double> r = s.increment(valarray<double>(0., 10), 1);
+    ASSERT_NE(0., accumulate(r));
+}
+
+TEST(Shear, IntegrateManual){
+    int steps = 10;
+    valarray<double> x(0.,10);
+    Shear s{};
+    for (auto i=0; i<steps;i++){
+        x += s.increment(x,0.01);
+    }
+    ASSERT_NE(0., accumulate(x));
+}
+
+TEST(Shear, IntegrateSimple){
+    variables v{};
+    v.delta = 1;
+    v.Q = 0;
+    Shear s{v};
+    ASSERT_EQ(0, s.getCurrStep());
+    s.Integrate();
+    ASSERT_EQ(10001, s.getCurrStep());
+    ASSERT_DOUBLE_EQ(1e-6, s.getCharVal());
+}
+
+TEST(Shear, Integrate){
+    Shear s1{};
+    double r1 = s1.Integrate();
+    Shear s2{0,1};
+    double r2 = s2.Integrate();
+    ASSERT_GT(r2, r1);
+}
+
+TEST(Shear, SearchSimple){
+    variables v{};
+    v.run_search = 1;
+    v.delta = 0.5;
+    Shear s{v};
+    s.solve();
+    ASSERT_NEAR(0, s.getCharVal(), 1e-4);
+}
+
+TEST(Shear, Search){
+    variables v{};
+    v.run_search = 1;
+    v.delta = 0.5;
+    v.A = 0.2;
+    Shear s{v};
+    s.solve();
+    ASSERT_NEAR(0, s.getCharVal(), 1e-4);
+}
+
+
+TEST(Values, Positive){
+    variables v{};
+    v.total_time = 0.01;
+    v.dt = 1e-7;
+    v.Q = 1;
+    vector<double> As{0.5, 1, 1.5, 3};
+    vector<double> Ds{0};
+
+    for (auto A: As){
+        for (auto D: Ds){
+            v.A = A;
+            v.delta = D;
+            Shear s{v};
+            s.solve();
+            cout << scientific << s.getCharVal() << endl;
+            ASSERT_TRUE(s.getCharVal() > 0);
+        }
+    }
+
+}
+
+TEST(Scaling, ConstTime){
+    variables v{};
+    v.total_time = 0.1;
+    v.A = 0.1;
+    v.delta = 0.1;
+
+    variables v1 = v;
+    v1.dt = 1e-7;
+    v1.size = 100;
+    variables v2 = v;
+    v2.dt = 5e-7;
+    v2.size = 100;
+    variables v3 = v;
+    v3.dt = 1e-7;
+    v3.size = 200;
+    variables v4 = v;
+    v4.dt = 5e-7;
+    v4.size = 200;
+
+    Shear s1{v1};
+    Shear s2{v2};
+    Shear s3{v3};
+    Shear s4{v4};
+    double r1 = s1.solve();
+    double r2 = s2.solve();
+    double r3 = s3.solve();
+    double r4 = s4.solve();
+
+    double precision = 1e-3;
+    ASSERT_NEAR(r1, r2, precision);
+    ASSERT_NEAR(r2, r4, precision);
+    ASSERT_NEAR(r1, r3, precision);
+    ASSERT_NEAR(r3, r4, precision);
+
+}
+
+TEST(Scaling, SteadyState){
+    variables v{};
+    v.run_search = 1;
+    v.A = 1;
+    v.delta = 1;
+    Shear s1{v};
+    s1.solve();
+    double d1 = s1.getD();
+    vector<int> sizes{100, 200};
+    vector<double> timesteps{1e-6, 5e-7, 1e-7};
+    vector<double> times{1, 0.1, 0.01};
+    for (auto size: sizes){
+        for (auto timestep: timesteps){
+            for (auto time: times){
+                v.size = size;
+                v.dt = timestep;
+                v.total_time = time;
+                Shear s{v};
+                s.solve();
+                double d = s.getD();
+                ASSERT_NEAR(d1, d, 5e-1);
+            }
+        }
+    }
+}
 
 int main(int argc, char **argv){
     testing::InitGoogleTest(&argc, argv);
