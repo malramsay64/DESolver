@@ -82,6 +82,7 @@ public:
     ~Euler();
 
     double getCharVal() const;
+    friend std::ostream &operator<<(std::ostream &os, const Euler &n);
 };
 
 

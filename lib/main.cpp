@@ -10,9 +10,7 @@ using namespace std;
 
 int main (int argc, char** argv){
     Shear i{get_vars(argc, argv)};
-
-    cout << i.solve() << endl;
-
+    i.solve();
     cout << i << endl;
     return 0;
 }

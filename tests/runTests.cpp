@@ -181,6 +181,7 @@ TEST(Euler, Output){
     ASSERT_STREQ(string0.c_str(), string1.c_str());
 }
 
+
 TEST(Euler, Outfile){
     Euler e{};
     ASSERT_STREQ(make_fname(variables{}).c_str(), e.getFname().c_str());
@@ -309,6 +310,20 @@ TEST(Shear, Output){
     ASSERT_STREQ(string0.c_str(), string1.c_str());
 }
 
+TEST(Shear, IntegratedOutput){
+    variables v{};
+    v.delta = 1;
+    v.Q = 0;
+    Shear s{v};
+    s.solve();
+    stringstream ss;
+    ss << s;
+    string str1 = ss.str();
+    string str0 = "0 1 0 100 0.01 1e-06 0.005";
+    ASSERT_NEAR(0.005, s.getCharVal(), 1e-7);
+    ASSERT_STREQ(str0.c_str(), str1.c_str());
+}
+
 TEST(Shear, Increment){
     Shear s{0, 1, 0};
     valarray<double> r = s.increment(valarray<double>(0., 10), 1);
@@ -354,7 +369,7 @@ TEST(Shear, SearchSimple){
     v.delta = 0.5;
     Shear s{v};
     s.solve();
-    ASSERT_NEAR(0, s.getCharVal(), 1e-4);
+    ASSERT_NEAR(0, s.getCharVal(), 2e-4);
 }
 
 TEST(Shear, Search){
@@ -364,7 +379,7 @@ TEST(Shear, Search){
     v.A = 0.2;
     Shear s{v};
     s.solve();
-    ASSERT_NEAR(0, s.getCharVal(), 1e-4);
+    ASSERT_NEAR(0, s.getCharVal(), 2e-4);
 }
 
 

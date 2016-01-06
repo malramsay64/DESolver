@@ -112,11 +112,11 @@ double Shear::solve() {
         cerr << defaultfloat;
         cerr << *this << endl;
         while (!search.done()){
+            myIntegrator.reset();
             cerr << "  " << search.numIters() << " Trying: " << D;
             meanVal = Integrate();
             cerr << " Value: " << meanVal << endl;
             D = search.getVal(D, (meanVal < 0 ? -1 : 1) );
-            myIntegrator.reset();
         }
         return meanVal;
     }

@@ -90,7 +90,7 @@ void Numerical_Integrator::print() const {
     std::ofstream outfile{fname, std::ios::app};
     double dx = 1./x.size();
     for(int i=0;i<x.size(); i++){
-        outfile << i*dx << " " << std::scientific << std::setprecision(5) << x[i] << " " << timestep*curr_step << std::endl;
+        outfile << i*dx << " "  << std::setprecision(5) << x[i] << " " << timestep*curr_step << std::endl;
     }
     outfile.close();
 }
@@ -186,5 +186,10 @@ double Euler::getCharVal() const {
         s.push(x[i]);
     }
     return s.getMean();
+}
+
+std::ostream &operator<<(std::ostream &os, const Euler &n) {
+    return os << n.getSize() << " " << n.getTotalTime() << " " << n.getTimestep() \
+            << " " << n.getCharVal();
 }
 
