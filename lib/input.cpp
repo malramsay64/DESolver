@@ -3,7 +3,6 @@
 //
 
 #include "input.h"
-#include "integrator.h"
 
 using namespace std;
 
@@ -31,91 +30,113 @@ void useage(){
             "    --search\n"
             "        Searches for a point on the steady state curve\n"
             "        by manipulating delta\n\n"
+            << endl;
+    /*
             "    --range\n"
             "        Provides a range of delta values at which there\n"
-            "        is a steasy state\n\n"
+            "        is a steady state\n\n"
     << endl;
+    */
 }
 
-int set_vars(int argc, char** argv, variables *v){
-    int opt;
+
+static struct option long_options[] = {
+        {"search",     no_argument,       0, 'S'},
+        {"range",      no_argument,       0, 'r'},
+        {"print",      no_argument,       0, 'p'},
+        {"size",       required_argument, 0, 's'},
+        {"total_time", required_argument, 0, 't'},
+        {"dx",         required_argument, 0, 'x'},
+        {"dt",         required_argument, 0, 'f'},
+        {"delta",      required_argument, 0, 'd'},
+        {"delay",      required_argument, 0, 'm'},
+        {"help",       no_argument,       0, 'h'},
+        {"deltaA",     required_argument, 0, 'D'},
+        {"Amax",       required_argument, 0, 'A'},
+        {"deltaDelta", required_argument, 0, '4'}
+};
+static string short_options = "s:q:t:a:A:D:x:d:f:m:prSh";
+
+string make_fname(const variables &v) {
+    stringstream fname;
+    fname << v.total_time << "-" << v.dt << "-" << v.size << "-" << v.Q << "-" << v.A << "-" << v.delta << ".dat";
+    return string{fname.str()};
+}
+
+variables get_vars(int argc, char **argv) {
+    if (argc == 1) {
+        useage();
+        exit(0);
+    }
+    variables v{};
     int option_index;
-    v->dt = 0;
-    v->dx = 0;
-    static struct option long_options[] = {
-            {"search", no_argument, &v->run_search, 1},
-            {"range", no_argument, &v->search_range, 1},
-            {"print", no_argument, &v->print, 1},
-            {"size", required_argument, 0, 's'},
-            {"total_time", required_argument, 0, 't'},
-            {"dx"  , required_argument, 0, 'x'},
-            {"dt"  , required_argument, 0, 'f'},
-            {"delta", required_argument, 0, 'd'},
-            {"delay", required_argument, 0, 'm'},
-            {"help", no_argument,      0, 'h'},
-            {"deltaA", required_argument, 0, 'D'},
-            {"Amax", required_argument, 0, 'A'},
-            {"deltaDelta", required_argument, 0, '4'}
-    };
-    while ((opt = getopt_long(argc, argv, "s:q:t:a:x:d:f:hpm:",long_options, &option_index)) != -1){
+    char opt;
+    while ((opt = getopt_long(argc, argv, short_options.c_str(), long_options, &option_index)) != -1) {
         switch (opt) {
             case 0:
                 break;
             case 's':
-                v->size = atoi(optarg);
+                v.size = atoi(optarg);
                 break;
             case 'q':
-                v->Q = atof(optarg);
+                v.Q = atof(optarg);
                 break;
             case 't':
-                v->total_time = atof(optarg);
+                v.total_time = atof(optarg);
                 break;
             case 'a':
-                v->A = atof(optarg);
+                v.A = atof(optarg);
                 break;
             case 'A':
-                v->Amax = atof(optarg);
-                break;
-            case 'p':
-                v->print = 1;
+                v.Amax = atof(optarg);
                 break;
             case 'D':
-                v->deltaA = atof(optarg);
+                v.deltaA = atof(optarg);
                 break;
             case 'x':
-                v->dx = atof(optarg);
+                v.dx = atof(optarg);
                 break;
             case 'd':
-                v->delta = atof(optarg);
+                v.delta = atof(optarg);
                 break;
             case 'f':
-                v->dt = atof(optarg);
+                v.dt = atof(optarg);
                 break;
             case 'm':
-                v->delay = atoi(optarg);
+                v.delay = atoi(optarg);
                 break;
             case '4':
-                v->deltaDelta = atof(optarg);
+                v.deltaDelta = atof(optarg);
+                break;
+            case 'p':
+                v.print = 1;
+                break;
+            case 'r':
+                v.search_range = 1;
+                break;
+            case 'S':
+                v.run_search = 1;
                 break;
             case 'h':
                 useage();
-                return 0;
+                exit(0);
             case '?':
                 if (optopt == 's' || optopt == 'Q') {
                     cerr << "Option -" << toascii(optopt) << " requires an argument." << endl;
                 }
                 else { cerr << "Unknown option -" << toascii(optopt) << endl;
                 }
-                return 1;
+                exit(1);
             default:
+                cerr << "Unknown flag " << toascii(opt) << endl;
                 abort();
         }
     }
-    if (v->dx == 0){
-        v->dx = 1./(v->size);
+    if (v.dx == 0) {
+        v.dx = 1. / (v.size);
     }
-    if (v->dt == 0){
-        v->dt = timestep(v->dx, v->size);
+    if (v.dt == 0) {
+        v.dt = 1e-7;
     }
-    return 0;
+    return v;
 }

@@ -16,24 +16,20 @@ include_directories(tests/lib/gtest-1.7.0/include)
 link_libraries(gtest pthread)
 
 set(SOURCE_FILES
-        lib/differentiate.cpp
-        lib/differentiate.h
-        lib/integrator.cpp
-        lib/integrator.h
         lib/noise.cpp
         lib/noise.h
         lib/functions.cpp
         lib/functions.h
-        lib/output.cpp
-        lib/output.h
-        lib/stability.cpp
-        lib/stability.h
         lib/input.cpp
         lib/input.h
-        lib/search.cpp
-        lib/search.h lib/stochastic_search.cpp lib/stochastic_search.h)
+        lib/Integrator.cpp
+        lib/Integrator.h
+        lib/Equation.cpp
+        lib/Equation.h
+        lib/Search.cpp
+        lib/Search.h
+        )
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
-add_executable(runBasicTests tests/basictest.cpp ${SOURCE_FILES})
-add_executable(runComplexTests tests/complextest.cpp ${SOURCE_FILES})
+add_executable(runTests tests/runTests.cpp ${SOURCE_FILES})
 
