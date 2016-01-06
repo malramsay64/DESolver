@@ -130,8 +130,6 @@ double Numerical_Integrator::getCharVal() const {
     return 0;
 }
 
-
-
 std::ostream &operator<<(std::ostream &os, const Numerical_Integrator &n) {
     return os << n.getSize() << " " << n.getTotalTime() << " " << n.getTimestep() \
             << " " << n.getCharVal();
@@ -145,6 +143,10 @@ Euler::Euler(){
     curr_step = 0;
     timestep = v.dt;
     print_freq = v.print ? floorl(total_time / timestep) / 100 : ceill(total_time / timestep);
+    fname = make_fname(v);
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
 }
 
 Euler::Euler(const variables &v) {
@@ -154,6 +156,10 @@ Euler::Euler(const variables &v) {
     curr_step = 0;
     timestep = v.dt;
     print_freq = v.print ? floorl(total_time / timestep) / 100 : ceill(total_time / timestep);
+    fname = make_fname(v);
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
 }
 
 Euler::~Euler(){

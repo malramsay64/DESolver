@@ -181,6 +181,16 @@ TEST(Euler, Output){
     ASSERT_STREQ(string0.c_str(), string1.c_str());
 }
 
+TEST(Euler, Outfile){
+    Euler e{};
+    ASSERT_STREQ(make_fname(variables{}).c_str(), e.getFname().c_str());
+    ifstream f{e.getFname()};
+    string s;
+    getline(f,s);
+    ASSERT_STREQ("Xpos Height Time", s.c_str());
+
+}
+
 TEST(Euler, VariableConstructor){
     variables v{};
     v.total_time = 1;

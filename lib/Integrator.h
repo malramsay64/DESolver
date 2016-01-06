@@ -67,6 +67,8 @@ public:
 
     double getCharVal() const;
 
+    std::string getFname() const {return fname;};
+
     friend std::ostream &operator<<(std::ostream &os, const Numerical_Integrator &n);
 };
 
