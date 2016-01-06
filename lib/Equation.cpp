@@ -109,9 +109,12 @@ double Shear::getD() const {
 double Shear::solve() {
     if (runSearch){
         double meanVal = 0;
+        cerr << defaultfloat;
+        cerr << *this << endl;
         while (!search.done()){
+            cerr << "  " << search.numIters() << " Trying: " << D;
             meanVal = Integrate();
-            cout << "Trying: " << D << " Value: " << scientific << meanVal << endl;
+            cerr << " Value: " << meanVal << endl;
             D = search.getVal(D, (meanVal < 0 ? -1 : 1) );
             myIntegrator.reset();
         }
@@ -146,7 +149,7 @@ valarray<double> Shear::increment(const std::valarray<double> &x, double dt) {
 }
 
 ostream &operator<<(ostream &os, const Shear &s) {
-    return os << s.getA() << ' ' << s.getD() << ' ' << s.getQ();
+    return os << s.getA() << ' ' << s.getD() << ' ' << s.getQ() << ' ' << s.myIntegrator;
 }
 
 ostream &operator<<(ostream &os, const NDEquation &s) {

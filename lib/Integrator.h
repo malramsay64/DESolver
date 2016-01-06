@@ -63,8 +63,6 @@ public:
 
     double getTimestep() const;
 
-    std::ostream &getOutfile();
-
     virtual void step(Shear &) = 0;
 
     double getCharVal() const;

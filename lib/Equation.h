@@ -136,6 +136,7 @@ public:
     double getPrintFreq() const {return myIntegrator.getPrintFreq();};
     double getCurrStep() const {return myIntegrator.getCurrStep();};
     double getCharVal() const {return myIntegrator.getCharVal();};
+    const Euler getIntegrator() const { return myIntegrator; };
     void printX() const;
 
     double getRand() {return n.getVal();};

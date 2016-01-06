@@ -12,6 +12,10 @@ Numerical_Integrator::Numerical_Integrator() {
     curr_step = 0;
     timestep = 0;
     print_freq = 0;
+    fname = "outfile.dat";
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
 }
 
 Numerical_Integrator::~Numerical_Integrator() {
@@ -25,6 +29,9 @@ Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt) {
     timestep = dt;
     print_freq = ceill(total_time / timestep);
     fname = "outfile.dat";
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
 }
 
 Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int num_print) {
@@ -35,6 +42,9 @@ Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int
     timestep = dt;
     print_freq = floorl(total_time/timestep)/num_print;
     fname = "outfile.dat";
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
 }
 
 Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int num_print, std::string infname) {
@@ -45,6 +55,9 @@ Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int
     timestep = dt;
     print_freq = floorl(total_time/timestep)/num_print;
     fname = infname;
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
 }
 
 Numerical_Integrator::Numerical_Integrator(const Numerical_Integrator& ni) {
@@ -68,15 +81,18 @@ Numerical_Integrator::Numerical_Integrator(Numerical_Integrator &&ni) {
 void Numerical_Integrator::reset(){
     x = std::valarray<double>(0.,size);
     curr_step = 0;
-
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
 }
 
 void Numerical_Integrator::print() const {
-    std::ofstream outfile{fname};
+    std::ofstream outfile{fname, std::ios::app};
+    double dx = 1./x.size();
     for(int i=0;i<x.size(); i++){
-        outfile << std::scientific << std::setprecision(5) << x[i] << ' ';
+        outfile << i*dx << " " << std::scientific << std::setprecision(5) << x[i] << " " << timestep*curr_step << std::endl;
     }
-    outfile << std::endl;
+    outfile.close();
 }
 
 
@@ -117,8 +133,8 @@ double Numerical_Integrator::getCharVal() const {
 
 
 std::ostream &operator<<(std::ostream &os, const Numerical_Integrator &n) {
-    return os << n.getSize() << ' ' << n.getTotalTime() << ' ' << n.getCurrStep()\
- << ' ' << n.getTimestep() << ' ' << n.getPrintFreq();
+    return os << n.getSize() << " " << n.getTotalTime() << " " << n.getTimestep() \
+            << " " << n.getCharVal();
 }
 
 Euler::Euler(){
@@ -165,12 +181,4 @@ double Euler::getCharVal() const {
     }
     return s.getMean();
 }
-/*
-std::ostream& operator<<(std::ostream& os, const Numerical_Integrator& n){
-    return os << n.getEquation() << " " << n.getSize() << " " << n.getTotalTime() << " " << n.getCurrStep()\
-            << " " << n.getTimestep() << " " << n.getPrintFreq();
-}
- */
-std::ostream &Numerical_Integrator::getOutfile() {
-    return std::cout;
-}
+

@@ -104,7 +104,7 @@ TEST(Noise, Initialisation){
 TEST(Noise, Distribution){
     Noise n{};
     Stats s{};
-    double precision = 1e-2;
+    double precision = 2e-2;
     long n_trials=2e5;
     for (long i=0; i!=n_trials; i++){
         s.push(n.getVal());
@@ -141,14 +141,15 @@ TEST(Equation, FiniteDoubleDifference){
 }
 
 TEST(Equation, Shear){
-    Shear s{};
+    variables v{};
+    Shear s{v};
     ASSERT_DOUBLE_EQ(0, s.getA());
     ASSERT_DOUBLE_EQ(0, s.getD());
     ASSERT_DOUBLE_EQ(1, s.getQ());
     stringstream ss;
     ss << s;
     string string1 = ss.str();
-    string string0 = "0 0 1";
+    string string0 = "0 0 1 100 0.01 1e-06 0";
     ASSERT_STREQ(string0.c_str(), string1.c_str());
     s = Shear{0,0,0};
     valarray<double> x{0.,100};
@@ -168,6 +169,16 @@ TEST(Euler, DefaultConstructor){
     ASSERT_DOUBLE_EQ(v.total_time, e.getTotalTime());
     ASSERT_DOUBLE_EQ(v.size, e.getSize());
     ASSERT_DOUBLE_EQ(v.dt, e.getTimestep());
+}
+
+TEST(Euler, Output){
+    Euler e{};
+    ASSERT_DOUBLE_EQ(1e-6, e.getTimestep());
+    stringstream ss;
+    ss << e;
+    string string1 = ss.str();
+    string string0 = "100 0.01 1e-06 0";
+    ASSERT_STREQ(string0.c_str(), string1.c_str());
 }
 
 TEST(Euler, VariableConstructor){
@@ -268,7 +279,6 @@ TEST(Shear, DefaultConstructor){
     ASSERT_EQ(100, s.getSize());
 }
 
-
 TEST(Shear, Rand){
     Shear s{};
     size_t size{100};
@@ -277,6 +287,16 @@ TEST(Shear, Rand){
         x[i] = s.getRand();
     }
     ASSERT_NE(0, accumulate(x));
+}
+
+TEST(Shear, Output){
+    Shear s{};
+    ASSERT_DOUBLE_EQ(1e-6, s.getTimestep());
+    stringstream ss;
+    ss << s;
+    string string1 = ss.str();
+    string string0 = "0 0 1 100 0.01 1e-06 0";
+    ASSERT_STREQ(string0.c_str(), string1.c_str());
 }
 
 TEST(Shear, Increment){
@@ -306,10 +326,8 @@ TEST(Shear, IntegrateSimple){
     v.delta = 1;
     v.Q = 0;
     Shear s{v};
-    ASSERT_EQ(0, s.getCurrStep());
     s.Integrate();
-    ASSERT_EQ(10001, s.getCurrStep());
-    ASSERT_DOUBLE_EQ(1e-6, s.getCharVal());
+    ASSERT_NEAR(0.005, s.getCharVal(), 1e-6);
 }
 
 TEST(Shear, Integrate){
@@ -345,8 +363,8 @@ TEST(Values, Positive){
     v.total_time = 0.01;
     v.dt = 1e-7;
     v.Q = 1;
-    vector<double> As{0.5, 1, 1.5, 3};
-    vector<double> Ds{0};
+    vector<double> As{0.01, 0.1};
+    vector<double> Ds{0.5, 1, 1.5, 3};
 
     for (auto A: As){
         for (auto D: Ds){
@@ -354,11 +372,29 @@ TEST(Values, Positive){
             v.delta = D;
             Shear s{v};
             s.solve();
-            cout << scientific << s.getCharVal() << endl;
             ASSERT_TRUE(s.getCharVal() > 0);
         }
     }
+}
 
+
+TEST(Values, Negative){
+    variables v{};
+    v.total_time = 0.01;
+    v.dt = 1e-7;
+    v.Q = 1;
+    vector<double> As{0.5, 1, 1.5, 3};
+    vector<double> Ds{0, 0.1};
+
+    for (auto A: As){
+        for (auto D: Ds){
+            v.A = A;
+            v.delta = D;
+            Shear s{v};
+            s.solve();
+            ASSERT_TRUE(s.getCharVal() < 0);
+        }
+    }
 }
 
 TEST(Scaling, ConstTime){
@@ -398,10 +434,11 @@ TEST(Scaling, ConstTime){
 }
 
 TEST(Scaling, SteadyState){
+    double precision = 5e-1;
     variables v{};
     v.run_search = 1;
     v.A = 1;
-    v.delta = 1;
+    v.delta = 0.3;
     Shear s1{v};
     s1.solve();
     double d1 = s1.getD();
@@ -417,7 +454,7 @@ TEST(Scaling, SteadyState){
                 Shear s{v};
                 s.solve();
                 double d = s.getD();
-                ASSERT_NEAR(d1, d, 5e-1);
+                ASSERT_NEAR(d1, d, precision);
             }
         }
     }
