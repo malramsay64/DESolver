@@ -13,9 +13,6 @@ Numerical_Integrator::Numerical_Integrator() {
     timestep = 0;
     print_freq = 0;
     fname = "outfile.dat";
-    std::ofstream header{fname};
-    header << "Xpos Height Time" << std::endl;
-    header.close();
 }
 
 Numerical_Integrator::~Numerical_Integrator() {
@@ -29,9 +26,6 @@ Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt) {
     timestep = dt;
     print_freq = ceill(total_time / timestep);
     fname = "outfile.dat";
-    std::ofstream header{fname};
-    header << "Xpos Height Time" << std::endl;
-    header.close();
 }
 
 Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int num_print) {
@@ -42,9 +36,6 @@ Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int
     timestep = dt;
     print_freq = floorl(total_time/timestep)/num_print;
     fname = "outfile.dat";
-    std::ofstream header{fname};
-    header << "Xpos Height Time" << std::endl;
-    header.close();
 }
 
 Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int num_print, std::string infname) {
@@ -55,9 +46,6 @@ Numerical_Integrator::Numerical_Integrator(size_t s, double time, double dt, int
     timestep = dt;
     print_freq = floorl(total_time/timestep)/num_print;
     fname = infname;
-    std::ofstream header{fname};
-    header << "Xpos Height Time" << std::endl;
-    header.close();
 }
 
 Numerical_Integrator::Numerical_Integrator(const Numerical_Integrator& ni) {
@@ -81,9 +69,6 @@ Numerical_Integrator::Numerical_Integrator(Numerical_Integrator &&ni) {
 void Numerical_Integrator::reset(){
     x = std::valarray<double>(0.,size);
     curr_step = 0;
-    std::ofstream header{fname};
-    header << "Xpos Height Time" << std::endl;
-    header.close();
 }
 
 void Numerical_Integrator::print() const {
@@ -97,6 +82,9 @@ void Numerical_Integrator::print() const {
 
 
 void Numerical_Integrator::integrate(Shear & n) {
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
     while (timestep * curr_step++ < total_time) {
         step(n);
     }
@@ -144,9 +132,6 @@ Euler::Euler(){
     timestep = v.dt;
     print_freq = v.print ? floorl(total_time / timestep) / 100 : ceill(total_time / timestep);
     fname = make_fname(v);
-    std::ofstream header{fname};
-    header << "Xpos Height Time" << std::endl;
-    header.close();
 }
 
 Euler::Euler(const variables &v) {
@@ -157,9 +142,6 @@ Euler::Euler(const variables &v) {
     timestep = v.dt;
     print_freq = v.print ? floorl(total_time / timestep) / 100 : ceill(total_time / timestep);
     fname = make_fname(v);
-    std::ofstream header{fname};
-    header << "Xpos Height Time" << std::endl;
-    header.close();
 }
 
 Euler::~Euler(){
@@ -167,6 +149,10 @@ Euler::~Euler(){
 }
 
 void Euler::integrate(Shear & n) {
+    std::ofstream header{fname};
+    header << "Xpos Height Time" << std::endl;
+    header.close();
+
     while (timestep * curr_step++ < total_time) {
         step(n);
     }
