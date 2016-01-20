@@ -8,13 +8,6 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-add_subdirectory(tests/lib/gtest-1.7.0)
-#find_library(gtest REQUIRED)
-#include_directories(${GTEST_INCLUDE_DIRS})
-include_directories(tests/lib/gtest-1.7.0/include)
-
-link_libraries(gtest pthread)
-
 set(SOURCE_FILES
         lib/noise.cpp
         lib/noise.h
@@ -30,6 +23,21 @@ set(SOURCE_FILES
         lib/Search.h
         )
 
+if (NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_subdirectory(tests/lib/gtest-1.7.0)
+    include_directories(tests/lib/gtest-1.7.0/include)
+
+    link_libraries(gtest pthread)
+    add_executable(runTests tests/runTests.cpp ${SOURCE_FILES})
+endif()
+
+
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
-add_executable(runTests tests/runTests.cpp ${SOURCE_FILES})
+
+SET(CMAKE_INSTALL_PREFIX $ENV{HOME}/.local)
+install(TARGETS shear
+        CONFIGURATIONS Release
+        DESTINATION bin
+        )
+
 
