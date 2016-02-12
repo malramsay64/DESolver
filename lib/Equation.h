@@ -53,13 +53,12 @@
 #include <iomanip>
 #include <string>
 #include <iostream>
-#include "Integrator.h"
 #include "Search.h"
 #include "noise.h"
+#include "Integrator.h"
 
 #ifndef SHEAR_EQUATION_H
 #define SHEAR_EQUATION_H
-
 
 class Equation {
 public:
@@ -68,82 +67,76 @@ public:
 
 class DEquation: public Equation {
 public:
-    DEquation();
-    double solve(){return 0;};
+    DEquation() : Equation() {};
 };
 
 
-class NDEquation: public  DEquation{
+class NDEquation: public DEquation {
 protected:
+    Euler myIntegrator;
 public:
 
-    NDEquation();
-    NDEquation(const NDEquation&);
+    NDEquation() : DEquation(), myIntegrator(Euler{}) {};
+    NDEquation(const Euler &ni) : DEquation(), myIntegrator(ni) {};
+    NDEquation(const NDEquation &n) : DEquation(), myIntegrator(n.myIntegrator) {};
 
-    double solve(){return 0;};
-
-    std::valarray<double> increment(const std::valarray<double> &, double) const;
+    virtual double solve(){ return 0; };
+    virtual double Integrate() { myIntegrator.integrate(*this); };
+    virtual std::valarray<double> increment(const std::valarray<double> &, double) const;
 
     friend std::ostream &operator<<(std::ostream &, const NDEquation &);
 };
 
-class Finite_Difference: public virtual NDEquation {
-    Euler myIntegrator{};
+
+class Finite_Difference: public NDEquation {
 public:
-    Finite_Difference();
-    ~Finite_Difference();
-    double solve();
+    Finite_Difference() : NDEquation() {};
+
+    double solve() { return 0; };
 
     std::valarray<double> increment(const std::valarray<double> &, double=1) const ;
 };
 
-class Finite_Double_Difference: public virtual NDEquation {
-    Euler myIntegrator{};
+class Finite_Double_Difference: public NDEquation {
 public:
-    Finite_Double_Difference();
-    Finite_Double_Difference(const Finite_Double_Difference &);
-    ~Finite_Double_Difference();
-    double solve();
+    Finite_Double_Difference() : NDEquation() {};
+
+    double solve() { return 0; };
+
     std::valarray<double> increment(const std::valarray<double> &, double=1) const ;
 };
 
-class Shear : public virtual NDEquation {
-
-    Euler myIntegrator{};
-    double A;
-    double Q;
+class Shear : public NDEquation {
+    const double A;
+    const double Q;
     double D;
-    Finite_Double_Difference d2{};
+    const bool runSearch;
+    const Finite_Double_Difference d2;
+
     Binary_Search search;
     Noise n{};
-    bool runSearch;
 public:
-    Shear();
-    Shear(double a, double d=0, double q=1);
-    Shear(const Euler &, double a, double d=0, double q=1);
-    Shear(const variables& v);
+    Shear() : NDEquation(Euler{}), A(0), D(0), Q(1), runSearch(false), d2(Finite_Double_Difference{}){};
+    Shear(double A, double D=0, double Q=1, const Euler &n=Euler{}) : NDEquation(n), A(A), D(D), Q(Q), runSearch(false), d2(Finite_Double_Difference{}) {};
+    Shear(const variables& v) : NDEquation(Euler{v}), A(v.A), D(v.delta), Q(v.Q), runSearch(v.run_search), d2(Finite_Double_Difference{}) {};
+    Shear(const Shear &s) : NDEquation(s.myIntegrator), A(s.A), D(s.D), Q(s.Q), runSearch(s.runSearch), d2(s.d2) {};
 
-    Shear(const Shear &);
-
-    double getA() const;
-
-    double getQ() const;
-
-    double getD() const;
-    double getTotalTime() const {return myIntegrator.getTotalTime();};
-    double getTimestep() const {return myIntegrator.getTimestep();};
+    double getA() const { return A; };
+    double getQ() const { return Q; };
+    double getD() const { return D; };
+    double getTotalTime() const {return myIntegrator.getTotalTime(); };
+    double getTimestep() const {return myIntegrator.getTimestep(); };
     double getSize() const {return myIntegrator.getSize();};
-    double getPrintFreq() const {return myIntegrator.getPrintFreq();};
-    double getCurrStep() const {return myIntegrator.getCurrStep();};
-    double getCharVal() const {return myIntegrator.getCharVal();};
+    double getPrintFreq() const {return myIntegrator.getPrintFreq(); };
+    double getCurrStep() const {return myIntegrator.getCurrStep(); };
+    double getCharVal() const {return myIntegrator.getCharVal(); };
     const Euler getIntegrator() const { return myIntegrator; };
-    void printX() const;
 
-    double getRand() {return n.getVal();};
+    void printX() const;
+    double getRand() { return n.getVal(); };
 
     std::valarray<double> increment(const std::valarray<double> &, double);
     double Integrate();
-
     double solve();
 
     friend std::ostream &operator<<(std::ostream &os, const Shear &s);

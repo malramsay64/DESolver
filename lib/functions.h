@@ -15,21 +15,6 @@ double sum(double *x, int size);
 void initialise( double *x, int size);
 int mode(int *x, int size);
 
-class Stats{
-    long long n;
-    double M1,M2,M3,M4;
-public:
-    Stats();
-    Stats(const std::valarray<double>&);
-    void push(double val);
-    double getMean();
-    double getVariance();
-    double getStandardDeviation();
-    double getSkewness();
-    double getKurtosis();
-    long long numVals();
-};
-
 template <class T>
 T accumulate (const std::valarray<T>& v,  T init){
     for (size_t i = 0; i != v.size(); i++) {

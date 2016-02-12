@@ -22,7 +22,7 @@ struct variables {
     int delay = 1;
     int run_search = 0;
     int search_range = 0;
-    double deltaDelta = 0.2;
+    double deltaDelta = 0.6;
     double Amax = 0;
     double deltaA = 0;
     int print = 0;
