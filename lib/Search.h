@@ -5,7 +5,7 @@
 #ifndef SHEAR_SEARCH_H
 #define SHEAR_SEARCH_H
 
-#include "stability.h"
+#include <limits>
 #include "input.h"
 
 class Search {

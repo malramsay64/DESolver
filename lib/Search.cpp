@@ -1,34 +1,25 @@
 //
 // Created by malcolm on 9/11/15.
 //
+
 #include "Search.h"
 
 using namespace std;
 
 
 Binary_Search::Binary_Search() {
-    max = INFINITY;
-    min = -INFINITY;
+    max = std::numeric_limits<double>::infinity();
+    min = -std::numeric_limits<double>::infinity();
     delta = 0.1;
     isdone = false;
     iteration = 0;
 }
 
-Binary_Search::Binary_Search(double d) {
-    max = INFINITY;
-    min = -INFINITY;
-    delta = d;
-    isdone = false;
-    iteration = 0;
+Binary_Search::Binary_Search(double d) : Binary_Search() {
+    delta  = d;
 }
-
-Binary_Search::Binary_Search(const variables &v) {
-    max = INFINITY;
-    min = -INFINITY;
+Binary_Search::Binary_Search(const variables &v): Binary_Search(){
     delta = v.deltaDelta;
-    isdone = false;
-    iteration = 0;
-
 }
 
 double Binary_Search::getVal(double val, int res) {
@@ -48,7 +39,7 @@ double Binary_Search::getVal(double val, int res) {
         }
     }
         // Getting range of values
-    else if (max == INFINITY){
+    else if (max == std::numeric_limits<double>::infinity()){
         if (res > 0){
             max = val;
             delta = (max - min)/2;
@@ -60,7 +51,7 @@ double Binary_Search::getVal(double val, int res) {
             return val + delta;
         }
     }
-    else if (min == -INFINITY) {
+    else if (min == -std::numeric_limits<double>::infinity()) {
         if (res < 0) {
             min = val;
             delta = (max-min)/2;

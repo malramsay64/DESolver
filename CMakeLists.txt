@@ -23,6 +23,12 @@ set(SOURCE_FILES
         lib/Search.h
         )
 
+# Include stats
+include_directories($ENV{HOME}/.local/include)
+link_directories($ENV{HOME}/.local/lib)
+
+link_libraries(stats)
+
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Release")
     add_subdirectory(tests/lib/gtest-1.7.0)
     include_directories(tests/lib/gtest-1.7.0/include)
@@ -30,7 +36,6 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Release")
     link_libraries(gtest pthread)
     add_executable(runTests tests/runTests.cpp ${SOURCE_FILES})
 endif()
-
 
 add_executable(shear lib/main.cpp ${SOURCE_FILES})
 
